@@ -13,7 +13,7 @@ function FixedBottomCTA({ label, onPress }: FixedBottomCTAProps) {
   const inset = useSafeAreaInsets(); //잘린영역 높이 구함
   return (
     <View style={[styles.fixed, { paddingBottom: inset.bottom || 12 }]}>
-      <CustomButton label="회원가입하기" onPress={onPress} />
+      <CustomButton label={label} onPress={onPress} />
     </View>
   );
 }
