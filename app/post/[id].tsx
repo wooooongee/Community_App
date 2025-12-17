@@ -85,7 +85,7 @@ export default function PostDetailScreen() {
                 <CommentItem
                   parentCommentId={parentCommentId}
                   onReply={() => handleReply(comment.id)}
-                  onCancleReply={handleCancelReply}
+                  onCancelReply={handleCancelReply}
                   comment={comment}
                 />
                 {comment.replies.map((reply) => (

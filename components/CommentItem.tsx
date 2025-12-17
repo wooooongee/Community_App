@@ -13,7 +13,7 @@ interface CommentItemProps {
   comment: Comment;
   parentCommentId?: number | null;
   onReply?: () => void;
-  onCancleReply?: () => void;
+  onCancelReply?: () => void;
   isReply?: boolean;
 }
 
@@ -21,7 +21,7 @@ const CommentItem = ({
   comment,
   parentCommentId,
   onReply,
-  onCancleReply,
+  onCancelReply,
   isReply = false,
 }: CommentItemProps) => {
   const { auth } = useAuth();
@@ -103,8 +103,8 @@ const CommentItem = ({
             <Text style={styles.replyButton}>답글 남기기</Text>
           </Pressable>
           {parentCommentId === comment.id && (
-            <Pressable onPress={onCancleReply}>
-              <Text style={styles.cancleButton}>취소</Text>
+            <Pressable onPress={onCancelReply}>
+              <Text style={styles.cancelButton}>취소</Text>
             </Pressable>
           )}
         </View>
@@ -136,7 +136,7 @@ const styles = StyleSheet.create({
     color: colors.ORANGE_600,
     fontSize: 12,
   },
-  cancleButton: {
+  cancelButton: {
     fontWeight: "bold",
     color: colors.BLACK,
     fontSize: 12,
