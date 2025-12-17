@@ -6,10 +6,18 @@ import { colors } from "@/constants";
 import useCreateComment from "@/hooks/queries/useCreateComment";
 import useGetPost from "@/hooks/queries/useGetPost";
 import { useLocalSearchParams } from "expo-router";
-import { useRef, useState } from "react";
-import { Pressable, ScrollView, StyleSheet, Text, View } from "react-native";
+import { Fragment, useRef, useState } from "react";
+import {
+  Keyboard,
+  Pressable,
+  SafeAreaView,
+  ScrollView,
+  StyleSheet,
+  Text,
+  View,
+  type TextInput,
+} from "react-native";
 import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
-import { SafeAreaView } from "react-native-safe-area-context";
 
 export default function PostDetailScreen() {
   const { id } = useLocalSearchParams();
@@ -17,16 +25,35 @@ export default function PostDetailScreen() {
   const createComment = useCreateComment();
   const [content, setContent] = useState("");
   const scrollRef = useRef<ScrollView | null>(null);
+  const inputRef = useRef<TextInput | null>(null);
+  const [parentCommentId, setParentCommentId] = useState<number | null>(null);
 
   if (isPending || isError) {
     return <></>;
   }
+
+  const handleReply = (commentId: number) => {
+    setParentCommentId(commentId);
+    inputRef.current?.focus();
+  };
+
+  const handleCancelReply = () => {
+    setParentCommentId(null);
+    Keyboard.dismiss();
+  };
 
   const handleSubmitComment = () => {
     const commentData = {
       postId: post.id,
       content: content,
     };
+    if (parentCommentId) {
+      createComment.mutate({ ...commentData, parentCommentId });
+      setContent("");
+      handleCancelReply();
+      return;
+    }
+
     createComment.mutate(commentData);
     setContent("");
 
@@ -38,7 +65,7 @@ export default function PostDetailScreen() {
 
   return (
     <AuthRoute>
-      <SafeAreaView style={styles.container} edges={["bottom"]}>
+      <SafeAreaView style={styles.container}>
         <KeyboardAwareScrollView
           contentContainerStyle={styles.awareScrollViewContainer}
         >
@@ -54,17 +81,30 @@ export default function PostDetailScreen() {
               </Text>
             </View>
             {post.comments?.map((comment) => (
-              <CommentItem key={comment.id} comment={comment} />
+              <Fragment key={comment.id}>
+                <CommentItem
+                  parentCommentId={parentCommentId}
+                  onReply={() => handleReply(comment.id)}
+                  onCancleReply={handleCancelReply}
+                  comment={comment}
+                />
+                {comment.replies.map((reply) => (
+                  <CommentItem key={reply.id} comment={reply} isReply />
+                ))}
+              </Fragment>
             ))}
           </ScrollView>
 
           <View style={styles.commentInputContainer}>
             <InputField
+              ref={inputRef}
               value={content}
               returnKeyType="send"
               onSubmitEditing={handleSubmitComment}
               onChangeText={(text) => setContent(text)}
-              placeholder="댓글을 남겨보세요."
+              placeholder={
+                parentCommentId ? "답글 남기는중..." : "댓글을 남겨보세요."
+              }
               rightChild={
                 <Pressable
                   disabled={!content}
@@ -113,7 +153,7 @@ const styles = StyleSheet.create({
   },
   inputButtonContainer: {
     backgroundColor: colors.ORANGE_600,
-    padding: 14,
+    padding: 8,
     borderRadius: 5,
   },
   inputButtonText: {
