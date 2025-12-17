@@ -1,6 +1,5 @@
 import React from "react";
 import { Controller, useFormContext } from "react-hook-form";
-import { StyleSheet } from "react-native";
 import InputField from "./InputField";
 
 function EmailInput() {
@@ -37,7 +36,5 @@ function EmailInput() {
     />
   );
 }
-
-const styles = StyleSheet.create({});
 
 export default EmailInput;
