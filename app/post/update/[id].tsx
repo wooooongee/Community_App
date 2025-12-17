@@ -19,8 +19,8 @@ type FormValues = {
 export default function PostUpdateScreen() {
   const { id } = useLocalSearchParams();
   const { data: post } = useGetPost(Number(id));
-  const updatePost = useUpdatePost();
   const navigation = useNavigation();
+  const updatePost = useUpdatePost();
   const postForm = useForm<FormValues>({
     defaultValues: {
       //   title: post?.title,

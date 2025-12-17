@@ -1,16 +1,23 @@
 import { colors } from "@/constants";
 import { Text } from "@react-navigation/elements";
-import React, { forwardRef, type ForwardedRef } from "react";
+import React, { forwardRef, type ForwardedRef, type ReactNode } from "react";
 import { StyleSheet, TextInput, View, type TextInputProps } from "react-native";
 
 interface InputFieldProps extends TextInputProps {
   label?: string;
   variant?: "filled" | "standard" | "outlined";
   error?: string;
+  rightChild?: ReactNode;
 }
 
 function InputField(
-  { label, variant = "filled", error = "", ...props }: InputFieldProps,
+  {
+    label,
+    variant = "filled",
+    error = "",
+    rightChild = null,
+    ...props
+  }: InputFieldProps,
   ref?: ForwardedRef<TextInput>
 ) {
   return (
@@ -33,6 +40,7 @@ function InputField(
           autoCorrect={false}
           {...props}
         />
+        {rightChild}
       </View>
       {Boolean(error) && <Text style={styles.error}>{error}</Text>}
     </View>
@@ -43,7 +51,7 @@ const styles = StyleSheet.create({
   container: {
     height: 44,
     borderRadius: 8,
-    paddingHorizontal: 10,
+    //paddingHorizontal: 10,
     justifyContent: "center",
     alignContent: "center",
     flexDirection: "row",

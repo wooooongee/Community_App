@@ -20,7 +20,7 @@ function FeedList() {
 
   const handleRefresh = async () => {
     setIsRefreshing(true);
-    await refetch;
+    await refetch();
     setIsRefreshing(false);
   };
 
