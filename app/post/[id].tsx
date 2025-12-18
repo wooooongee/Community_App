@@ -72,6 +72,7 @@ export default function PostDetailScreen() {
     <AuthRoute>
       <SafeAreaView style={styles.container}>
         <KeyboardAvoidingView
+          style={{ flex: 1 }}
           contentContainerStyle={styles.awareScrollViewContainer}
           behavior="height"
           keyboardVerticalOffset={
@@ -81,7 +82,7 @@ export default function PostDetailScreen() {
         >
           <ScrollView
             ref={scrollRef}
-            style={{ marginBottom: 75 }}
+            style={{ flex: 1, marginBottom: 75 }}
             contentContainerStyle={styles.scrollViewContainer}
           >
             <View style={{ marginTop: 12 }}>
@@ -138,8 +139,8 @@ const styles = StyleSheet.create({
     backgroundColor: colors.WHITE,
   },
   awareScrollViewContainer: {
-    flex: 1,
     backgroundColor: colors.GRAY_200,
+    flexGrow: 1,
   },
   scrollViewContainer: {
     backgroundColor: colors.GRAY_200,
