@@ -1,9 +1,9 @@
 import { colors } from "@/constants";
-import dayjs from "dayjs";
-import "dayjs/locale/ko";
-import relativeTime from "dayjs/plugin/relativeTime";
-import React, { type ReactNode } from "react";
+import React, { ReactNode } from "react";
 import { Image, Pressable, StyleSheet, Text, View } from "react-native";
+import dayjs from "dayjs";
+import relativeTime from "dayjs/plugin/relativeTime";
+import "dayjs/locale/ko";
 dayjs.extend(relativeTime);
 dayjs.locale("ko");
 
@@ -35,7 +35,7 @@ function Profile({
         />
         <View style={{ gap: 4 }}>
           <Text style={styles.nickname}>{nickname}</Text>
-          <Text style={styles.createAt}>{dayjs(createdAt).fromNow()}</Text>
+          <Text style={styles.createdAt}>{dayjs(createdAt).fromNow()}</Text>
         </View>
       </Pressable>
       {option}
@@ -47,6 +47,7 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     flexDirection: "row",
+    alignItems: "center",
     justifyContent: "space-between",
   },
   profileContainer: {
@@ -66,7 +67,7 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
     color: colors.BLACK,
   },
-  createAt: {
+  createdAt: {
     fontSize: 14,
     color: colors.GRAY_500,
   },

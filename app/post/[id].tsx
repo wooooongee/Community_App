@@ -5,19 +5,22 @@ import InputField from "@/components/InputField";
 import { colors } from "@/constants";
 import useCreateComment from "@/hooks/queries/useCreateComment";
 import useGetPost from "@/hooks/queries/useGetPost";
+import useKeyboard from "@/hooks/queries/useKeyboard";
 import { useLocalSearchParams } from "expo-router";
 import { Fragment, useRef, useState } from "react";
 import {
   Keyboard,
+  KeyboardAvoidingView,
+  Platform,
   Pressable,
   SafeAreaView,
   ScrollView,
   StyleSheet,
   Text,
+  TextInput,
   View,
-  type TextInput,
 } from "react-native";
-import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 export default function PostDetailScreen() {
   const { id } = useLocalSearchParams();
@@ -27,6 +30,8 @@ export default function PostDetailScreen() {
   const scrollRef = useRef<ScrollView | null>(null);
   const inputRef = useRef<TextInput | null>(null);
   const [parentCommentId, setParentCommentId] = useState<number | null>(null);
+  const { isKeyboardVisble } = useKeyboard();
+  const insets = useSafeAreaInsets();
 
   if (isPending || isError) {
     return <></>;
@@ -66,8 +71,13 @@ export default function PostDetailScreen() {
   return (
     <AuthRoute>
       <SafeAreaView style={styles.container}>
-        <KeyboardAwareScrollView
+        <KeyboardAvoidingView
           contentContainerStyle={styles.awareScrollViewContainer}
+          behavior="height"
+          keyboardVerticalOffset={
+            Platform.OS === "ios" || isKeyboardVisble ? 115 : insets.bottom
+          }
+          //   keyboardVerticalOffset={115}
         >
           <ScrollView
             ref={scrollRef}
@@ -116,7 +126,7 @@ export default function PostDetailScreen() {
               }
             />
           </View>
-        </KeyboardAwareScrollView>
+        </KeyboardAvoidingView>
       </SafeAreaView>
     </AuthRoute>
   );

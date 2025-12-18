@@ -1,7 +1,12 @@
 import { colors } from "@/constants";
-import { Text } from "@react-navigation/elements";
-import React, { forwardRef, type ForwardedRef, type ReactNode } from "react";
-import { StyleSheet, TextInput, View, type TextInputProps } from "react-native";
+import React, { ForwardedRef, forwardRef, ReactNode } from "react";
+import {
+  StyleSheet,
+  Text,
+  TextInput,
+  TextInputProps,
+  View,
+} from "react-native";
 
 interface InputFieldProps extends TextInputProps {
   label?: string;
@@ -51,9 +56,9 @@ const styles = StyleSheet.create({
   container: {
     height: 44,
     borderRadius: 8,
-    //paddingHorizontal: 10,
+    paddingHorizontal: 10,
     justifyContent: "center",
-    alignContent: "center",
+    alignItems: "center",
     flexDirection: "row",
   },
   label: {
