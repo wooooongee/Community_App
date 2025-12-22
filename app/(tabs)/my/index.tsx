@@ -6,6 +6,7 @@ import MyFeedList from "@/components/MyFeedList";
 import Tab from "@/components/Tab";
 import { colors } from "@/constants";
 import useAuth from "@/hooks/queries/useAuth";
+import { router } from "expo-router";
 import { useRef, useState } from "react";
 import { Image, Platform, StyleSheet, Text, View } from "react-native";
 import PagerView from "react-native-pager-view";
@@ -40,6 +41,7 @@ export default function MyScreen() {
           variant="outlined"
           label="프로필 편집"
           style={{ position: "absolute", right: 16, bottom: 16 }}
+          onPress={() => router.push("/profile/update")}
         />
       </View>
       <View style={styles.container}>
