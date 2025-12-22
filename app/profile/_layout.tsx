@@ -41,6 +41,20 @@ export default function ProfileLayout() {
           ),
         }}
       />
+      <Stack.Screen
+        name="avatar"
+        options={{
+          headerShown: true,
+          headerBackButtonDisplayMode: "minimal",
+          headerShadowVisible: false,
+          headerTitle: "",
+          headerLeft: () => (
+            <Pressable onPress={() => router.back()}>
+              <Foundation name="arrow-left" size={28} color={"black"} />
+            </Pressable>
+          ),
+        }}
+      />
     </Stack>
   );
 }
