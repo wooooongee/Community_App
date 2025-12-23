@@ -5,9 +5,10 @@ import { getSecureStore } from "@/utils/secureStore";
 import { ActionSheetProvider } from "@expo/react-native-action-sheet";
 import { QueryClientProvider } from "@tanstack/react-query";
 import dayjs from "dayjs";
+import { useFonts } from "expo-font";
 import { getLocales } from "expo-localization";
 import * as Notifications from "expo-notifications";
-import { Stack } from "expo-router";
+import { SplashScreen, Stack } from "expo-router";
 import i18n from "i18next";
 import { useEffect } from "react";
 import { initReactI18next, useTranslation } from "react-i18next";
@@ -28,6 +29,18 @@ Notifications.setNotificationHandler({
 });
 
 export default function RootLayout() {
+  const [loaded] = useFonts({
+    "Pretendard-Regular": require("../assets/fonts/Pretendard-Regular.otf"),
+  });
+  useEffect(() => {
+    if (loaded) {
+      SplashScreen.hideAsync();
+    }
+  }, [loaded]);
+
+  if (!loaded) {
+    return null;
+  }
   return (
     <ActionSheetProvider>
       <QueryClientProvider client={queryClient}>
