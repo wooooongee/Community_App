@@ -14,9 +14,11 @@ import {
 } from "react-native";
 import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
 import VoteInput from "./VoteInput";
+import { useTranslation } from "react-i18next";
 
 const VoteModal = () => {
   const { control, setValue } = useFormContext();
+  const { t } = useTranslation(); 
   const [voteOptions, isVoteOpen] = useWatch({
     control,
     name: ["voteOptions", "isVoteOpen"],
@@ -36,7 +38,7 @@ const VoteModal = () => {
 
   const handleSubmitVote = () => {
     if (voteOptions.length < 2) {
-      Alert.alert("투표 항목을 2개이상 추가해주세요.", "");
+      Alert.alert(t("Add at least 2 vote options"), ""); 
       return;
     }
 
@@ -54,9 +56,9 @@ const VoteModal = () => {
           >
             <Feather name="arrow-left" size={28} color={colors.BLACK} />
           </Pressable>
-          <Text style={styles.headerTitle}>투표</Text>
+          <Text style={styles.headerTitle}>{t("Vote")}</Text>
           <Text style={styles.headerRight} onPress={handleSubmitVote}>
-            첨부
+            {t("Attach")} 
           </Text>
         </View>
         <KeyboardAwareScrollView
@@ -72,7 +74,7 @@ const VoteModal = () => {
             );
           })}
           <Pressable onPress={handleAppendVote}>
-            <Text style={styles.addVoteText}>항목 추가</Text>
+            <Text style={styles.addVoteText}>{t("Add option")}</Text>
           </Pressable>
         </KeyboardAwareScrollView>
       </SafeAreaView>

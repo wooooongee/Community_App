@@ -8,6 +8,7 @@ import { colors } from "@/constants";
 import useAuth from "@/hooks/queries/useAuth";
 import { router } from "expo-router";
 import { useRef, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { Image, Platform, StyleSheet, Text, View } from "react-native";
 import PagerView from "react-native-pager-view";
 
@@ -15,6 +16,7 @@ export default function MyScreen() {
   const { auth } = useAuth();
   const [currentTab, setCurrentTab] = useState(0);
   const pagerRef = useRef<PagerView | null>(null);
+  const { t } = useTranslation();
 
   const handlePressTab = (index: number) => {
     pagerRef.current?.setPage(index);
@@ -39,7 +41,7 @@ export default function MyScreen() {
         <CustomButton
           size="medium"
           variant="outlined"
-          label="프로필 편집"
+          label={t("Edit Profile")}
           style={{ position: "absolute", right: 16, bottom: 16 }}
           onPress={() => router.push("/profile/update")}
         />
@@ -52,10 +54,10 @@ export default function MyScreen() {
 
         <View style={styles.tabContainer}>
           <Tab isActive={currentTab === 0} onPress={() => handlePressTab(0)}>
-            게시물
+            {t("Posts")}
           </Tab>
           <Tab isActive={currentTab === 1} onPress={() => handlePressTab(1)}>
-            좋아한 게시물
+            {t("Liked Posts")}
           </Tab>
         </View>
       </View>

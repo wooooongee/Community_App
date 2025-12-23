@@ -53,7 +53,7 @@ const styles = StyleSheet.create({
   medium: {
     height: 38,
     alignSelf: "center",
-    paddingHorizontal: 12,
+    paddingHorizontal: 8,
   },
   filled: {
     backgroundColor: colors.ORANGE_600,

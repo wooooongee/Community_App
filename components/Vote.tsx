@@ -7,6 +7,7 @@ import React, { Fragment, useState } from "react";
 import { StyleSheet, Text, View } from "react-native";
 import CustomButton from "./CustomButton";
 import VoteOption from "./VoteOption";
+import { useTranslation } from "react-i18next"; 
 
 interface VoteProps {
   postId: number;
@@ -16,6 +17,7 @@ interface VoteProps {
 
 const Vote = ({ postId, postVotes, voteCount }: VoteProps) => {
   const { auth } = useAuth();
+  const { t } = useTranslation(); 
   const [selectedId, setSelectedId] = useState<number>();
   const createVote = useCreateVote();
 
@@ -26,10 +28,10 @@ const Vote = ({ postId, postVotes, voteCount }: VoteProps) => {
   return (
     <View style={styles.container}>
       <View style={styles.label}>
-        <Text style={styles.labelTitle}>투표</Text>
+        <Text style={styles.labelTitle}>{t("Vote")}</Text>
         <View style={styles.labelCount}>
           <Feather name="user" size={14} color={colors.BLACK} />
-          <Text style={styles.labelCountText}>{voteCount}명 참여</Text>
+          <Text style={styles.labelCountText}>{t("{{count}} participants", { count: voteCount })} </Text>
         </View>
       </View>
       {postVotes.map((vote) => {
@@ -54,7 +56,7 @@ const Vote = ({ postId, postVotes, voteCount }: VoteProps) => {
             })}
             {!isVoted && (
               <CustomButton
-                label="투표하기"
+                label={t("Vote Now")} 
                 disabled={!selectedId}
                 onPress={handleVote}
               />

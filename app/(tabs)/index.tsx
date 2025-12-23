@@ -4,6 +4,7 @@ import { colors } from "@/constants";
 import useAuth from "@/hooks/queries/useAuth";
 import { Ionicons } from "@expo/vector-icons";
 import { router } from "expo-router";
+import { useTranslation } from "react-i18next";
 import {
   Image,
   Platform,
@@ -16,6 +17,7 @@ import {
 
 export default function HomeScreen() {
   const { auth } = useAuth();
+  const { t } = useTranslation(); 
 
   return (
     <SafeAreaView style={styles.container}>
@@ -26,7 +28,7 @@ export default function HomeScreen() {
         />
         <SearchInput
           readOnly
-          placeholder="글 제목 검색"
+          placeholder={t("Search post title")} 
           onPress={() => router.push("/post/search")}
         />
       </View>

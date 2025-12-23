@@ -11,6 +11,7 @@ import { Pressable, StyleSheet, Text, View } from "react-native";
 import ImagePreviewList from "./ImagePreviewList";
 import Profile from "./Profile";
 import Vote from "./Vote";
+import { useTranslation } from "react-i18next"; 
 
 interface FeedItemProps {
   post: Post;
@@ -19,6 +20,7 @@ interface FeedItemProps {
 
 function FeedItem({ post, isDetail = false }: FeedItemProps) {
   const { auth } = useAuth();
+  const { t } = useTranslation();
   const likeUsers = post.likes?.map((like) => Number(like.userId));
   const isLiked = likeUsers?.includes(Number(auth.id));
   const { showActionSheetWithOptions } = useActionSheet();
@@ -26,7 +28,7 @@ function FeedItem({ post, isDetail = false }: FeedItemProps) {
   const likePost = useLikePost();
 
   const handlePressOption = () => {
-    const options = ["삭제", "수정", "취소"];
+    const options = [t("Delete"), t("Edit"), t("Cancel")];;
     const destructiveButtonIndex = 0;
     const cancelButtonIndex = 2;
 
@@ -106,10 +108,10 @@ function FeedItem({ post, isDetail = false }: FeedItemProps) {
                 size={24}
                 color={colors.ORANGE_600}
               />
-              <Text style={styles.voteText}>투표</Text>
+              <Text style={styles.voteText}>{t("Vote")}</Text>
             </View>
             <Text style={styles.voteCountText}>
-              {post.voteCount}명 참여중...
+              {t("{{count}} participants", { count: post.voteCount })} 
             </Text>
           </View>
         )}
@@ -129,7 +131,7 @@ function FeedItem({ post, isDetail = false }: FeedItemProps) {
             color={isLiked ? colors.ORANGE_600 : colors.BLACK}
           />
           <Text style={isLiked ? styles.activeMenuText : styles.menuText}>
-            {post.likes.length || "좋아요"}
+            {post.likes.length || t("Like")}
           </Text>
         </Pressable>
         <Pressable style={styles.menu} onPress={handlePressFeed}>
@@ -138,7 +140,7 @@ function FeedItem({ post, isDetail = false }: FeedItemProps) {
             size={16}
             color={colors.BLACK}
           />
-          <Text style={styles.menuText}>{post.commentCount || "댓글"}</Text>
+          <Text style={styles.menuText}>{post.commentCount || t("Comment")}</Text>
         </Pressable>
         <Pressable style={styles.menu}>
           <Ionicons name="eye-outline" size={16} color={colors.BLACK} />

@@ -8,6 +8,7 @@ import useGetPost from "@/hooks/queries/useGetPost";
 import useKeyboard from "@/hooks/queries/useKeyboard";
 import { useLocalSearchParams } from "expo-router";
 import { Fragment, useRef, useState } from "react";
+import { useTranslation } from "react-i18next";
 import {
   Keyboard,
   KeyboardAvoidingView,
@@ -32,6 +33,7 @@ export default function PostDetailScreen() {
   const [parentCommentId, setParentCommentId] = useState<number | null>(null);
   const { isKeyboardVisble } = useKeyboard();
   const insets = useSafeAreaInsets();
+  const { t } = useTranslation(); 
 
   if (isPending || isError) {
     return <></>;
@@ -88,7 +90,7 @@ export default function PostDetailScreen() {
             <View style={{ marginTop: 12 }}>
               <FeedItem post={post} isDetail />
               <Text style={styles.commentCount}>
-                댓글 {post.commentCount}개
+                {t("{{count}} comments", { count: post.commentCount })} 
               </Text>
             </View>
             {post.comments?.map((comment) => (
@@ -114,7 +116,9 @@ export default function PostDetailScreen() {
               onSubmitEditing={handleSubmitComment}
               onChangeText={(text) => setContent(text)}
               placeholder={
-                parentCommentId ? "답글 남기는중..." : "댓글을 남겨보세요."
+                parentCommentId 
+                  ? t("Writing a reply...") 
+                  : t("Leave a comment") 
               }
               rightChild={
                 <Pressable
@@ -122,7 +126,7 @@ export default function PostDetailScreen() {
                   style={styles.inputButtonContainer}
                   onPress={handleSubmitComment}
                 >
-                  <Text style={styles.inputButtonText}>등록</Text>
+                  <Text style={styles.inputButtonText}>{t("Post")}</Text>
                 </Pressable>
               }
             />

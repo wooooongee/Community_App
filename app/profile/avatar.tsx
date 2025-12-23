@@ -11,6 +11,7 @@ import { FlatList, Platform, StyleSheet, View } from "react-native";
 import PagerView from "react-native-pager-view";
 import { SvgUri } from "react-native-svg";
 import Toast from "react-native-toast-message";
+import { useTranslation } from "react-i18next";
 
 export default function AvatarScreen() {
   const navigation = useNavigation();
@@ -18,6 +19,7 @@ export default function AvatarScreen() {
   const { hats, faces, tops, bottoms, hands, skins } = useGetAvatarItems();
   const [currentTab, setCurrentTab] = useState(0);
   const { auth, profileMutation } = useAuth();
+  const { t } = useTranslation(); 
   const [avatarItem, setAvatarItem] = useState({
     hatId: auth?.hatId ?? "",
     faceId: auth?.faceId ?? "",
@@ -48,7 +50,7 @@ export default function AvatarScreen() {
       onSuccess: () =>
         Toast.show({
           type: "success",
-          text1: "저장되었습니다.",
+          text1: t("Saved successfully"),
         }),
     });
   };
@@ -119,7 +121,14 @@ export default function AvatarScreen() {
           </View>
         </View>
         <View style={styles.tabContainer}>
-          {["모자", "얼굴", "상의", "하의", "손", "피부"].map((tab, index) => (
+          {[
+            t("Hat"), 
+            t("Face"), 
+            t("Top"), 
+            t("Bottom"), 
+            t("Hand"), 
+            t("Skin")
+          ].map((tab, index) => (
             <Tab
               key={index}
               isActive={currentTab === index}
@@ -160,7 +169,7 @@ export default function AvatarScreen() {
           ))}
         </PagerView>
       </View>
-      <FixedBottomCTA label="저장" onPress={handleSaveAvatar} />
+      <FixedBottomCTA label={t("Save")} onPress={handleSaveAvatar} />
     </>
   );
 }

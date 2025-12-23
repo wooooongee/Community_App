@@ -9,6 +9,7 @@ import React from "react";
 import { Pressable, StyleSheet, Text, View } from "react-native";
 import InputField from "./InputField";
 import Profile from "./Profile";
+import { useTranslation } from "react-i18next";
 
 interface CommentItemProps {
   comment: Comment;
@@ -26,6 +27,7 @@ const CommentItem = ({
   isReply = false,
 }: CommentItemProps) => {
   const { auth } = useAuth();
+   const { t } = useTranslation(); 
   const { showActionSheetWithOptions } = useActionSheet();
   const deleteComment = useDeleteComment();
 
@@ -40,7 +42,7 @@ const CommentItem = ({
   };
 
   const handlePressOption = () => {
-    const options = ["삭제", "취소"];
+    const options = [t("Delete"), t("Cancel")];  
     const destructiveButtonIndex = 0;
     const cancelButtonIndex = 1;
 
@@ -78,7 +80,7 @@ const CommentItem = ({
         )}
         <Profile
           imageUri={comment.isDeleted ? "" : comment.user.imageUri}
-          nickname={comment.isDeleted ? "(삭제)" : comment.user.nickname}
+          nickname={comment.isDeleted ? t("(Deleted)") : comment.user.nickname}
           createdAt={comment.createdAt}
           onPress={() => {
             if (!comment.isDeleted) {
@@ -105,11 +107,11 @@ const CommentItem = ({
       {!comment.isDeleted && !isReply && (
         <View style={styles.replyButtonContainer}>
           <Pressable onPress={onReply}>
-            <Text style={styles.replyButton}>답글 남기기</Text>
+            <Text style={styles.replyButton}>{t("Reply")}</Text>
           </Pressable>
           {parentCommentId === comment.id && (
             <Pressable onPress={onCancelReply}>
-              <Text style={styles.cancelButton}>취소</Text>
+              <Text style={styles.cancelButton}>{t("Cancel")}</Text>
             </Pressable>
           )}
         </View>

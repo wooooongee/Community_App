@@ -10,6 +10,7 @@ import type { ImageUri, VoteOption } from "@/types";
 import { useNavigation } from "expo-router";
 import { useEffect } from "react";
 import { FormProvider, useForm } from "react-hook-form";
+import { useTranslation } from "react-i18next";
 import { StyleSheet } from "react-native";
 import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
 
@@ -25,6 +26,7 @@ type FormValues = {
 export default function PostWriteScreen() {
   const navigation = useNavigation();
   const createPost = useCreatePost();
+  const { t } = useTranslation();
   const postForm = useForm<FormValues>({
     defaultValues: {
       title: "",
@@ -40,22 +42,20 @@ export default function PostWriteScreen() {
     createPost.mutate(formValues);
   };
 
-  // console.log("postForm", postForm.watch().imageUris);
-
   useEffect(() => {
     navigation.setOptions({
       headerRight: () => (
         <CustomButton
-          label="저장"
+          label={t("Save")}
           size="medium"
           variant="standard"
           onPress={postForm.handleSubmit(onSubmit)}
         />
       ),
     });
-  }, []);
+  }, [t]);
 
-  return ( 
+  return (
     <FormProvider {...postForm}>
       <KeyboardAwareScrollView contentContainerStyle={styles.container}>
         <TitleInput />

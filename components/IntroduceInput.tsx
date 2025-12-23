@@ -1,8 +1,10 @@
 import { Controller, useFormContext } from "react-hook-form";
 import InputField from "./InputField";
+import { useTranslation } from "react-i18next";
 
 function IntroduceInput() {
   const { control } = useFormContext();
+  const { t } = useTranslation();
 
   return (
     <Controller
@@ -11,8 +13,8 @@ function IntroduceInput() {
       render={({ field: { ref, onChange, value } }) => (
         <InputField
           ref={ref}
-          label="소개"
-          placeholder="소개를 입력해주세요."
+          label={t("Introduce")}
+          placeholder={t("Enter your introduction")} 
           returnKeyType="next"
           value={value}
           onChangeText={onChange}

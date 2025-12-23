@@ -1,8 +1,10 @@
 import { Controller, useFormContext } from "react-hook-form";
 import InputField from "./InputField";
+import { useTranslation } from "react-i18next";
 
 function NicknameInput() {
   const { control, setFocus } = useFormContext();
+  const { t } = useTranslation();
 
   return (
     <Controller
@@ -11,14 +13,14 @@ function NicknameInput() {
       rules={{
         validate: (data: string) => {
           if (data.length < 2) {
-            return "닉네임은 2자이상 입력해주세요.";
+            return t("Nickname must be at least 2 characters"); 
           }
         },
       }}
       render={({ field: { onChange, value }, fieldState: { error } }) => (
         <InputField
-          label="닉네임"
-          placeholder="닉네임을 입력해주세요."
+          label={t("Nickname")} 
+          placeholder={t("Enter your nickname")}
           inputMode="text"
           returnKeyType="next"
           submitBehavior="submit"

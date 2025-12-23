@@ -7,6 +7,7 @@ import { colors } from "@/constants";
 import useAuth from "@/hooks/queries/useAuth";
 import { router } from "expo-router";
 import { FormProvider, useForm } from "react-hook-form";
+import { useTranslation } from "react-i18next";
 import { Image, Platform, StyleSheet, View } from "react-native";
 import Toast from "react-native-toast-message";
 
@@ -16,6 +17,7 @@ type FormValues = {
 };
 
 export default function ProfileUpdateScreen() {
+  const { t } = useTranslation();
   const { auth, profileMutation } = useAuth();
   const profileForm = useForm<FormValues>({
     defaultValues: {
@@ -29,7 +31,7 @@ export default function ProfileUpdateScreen() {
       onSuccess: () =>
         Toast.show({
           type: "success",
-          text1: "저장되었습니다.",
+          text1: t("Saved successfully"),
         }),
     });
   };
@@ -53,7 +55,7 @@ export default function ProfileUpdateScreen() {
           <CustomButton
             size="medium"
             variant="outlined"
-            label="아바타 변경"
+            label={t("Change Avatar")}
             style={{ position: "absolute", right: 0, bottom: 0 }}
             onPress={() => router.push("/profile/avatar")}
           />
@@ -64,7 +66,7 @@ export default function ProfileUpdateScreen() {
         </View>
       </View>
       <FixedBottomCTA
-        label="저장"
+        label={t("Save")}
         onPress={profileForm.handleSubmit(onSubmit)}
       />
     </FormProvider>

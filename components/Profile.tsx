@@ -4,6 +4,7 @@ import dayjs from "dayjs";
 import "dayjs/locale/ko";
 import relativeTime from "dayjs/plugin/relativeTime";
 import React, { ReactNode } from "react";
+import { useTranslation } from "react-i18next";
 import {
   Image,
   Platform,
@@ -13,7 +14,6 @@ import {
   View,
 } from "react-native";
 dayjs.extend(relativeTime);
-dayjs.locale("ko");
 
 interface ProfileProps {
   onPress: () => void;
@@ -30,6 +30,7 @@ function Profile({
   createdAt,
   option,
 }: ProfileProps) {
+  const { i18n } = useTranslation();
   return (
     <View style={styles.container}>
       <Pressable style={styles.profileContainer} onPress={onPress}>
@@ -47,7 +48,7 @@ function Profile({
         />
         <View style={{ gap: 4 }}>
           <Text style={styles.nickname}>{nickname}</Text>
-          <Text style={styles.createdAt}>{dayjs(createdAt).fromNow()}</Text>
+          <Text style={styles.createdAt}>{dayjs(createdAt).locale(i18n.language).fromNow()}</Text>
         </View>
       </Pressable>
       {option}

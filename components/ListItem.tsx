@@ -36,6 +36,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
     gap: 10,
     padding: 15,
+    minHeight: 56,
     backgroundColor: colors.WHITE,
     borderColor: colors.GRAY_200,
     borderBottomWidth: StyleSheet.hairlineWidth,

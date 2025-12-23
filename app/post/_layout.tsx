@@ -2,8 +2,10 @@ import { colors } from "@/constants";
 import { Feather } from "@expo/vector-icons";
 import { Link, Stack, router } from "expo-router";
 import { Pressable } from "react-native";
+import { useTranslation } from "react-i18next"; 
 
 export default function PostLayout() {
+  const { t } = useTranslation(); 
   return (
     <Stack
       screenOptions={{
@@ -16,7 +18,7 @@ export default function PostLayout() {
       <Stack.Screen
         name="write"
         options={{
-          title: "글쓰기",
+          title: t("Write Post"),
           headerShown: true,
           headerLeft: () => (
             <Link href={"/"} replace>
@@ -44,7 +46,7 @@ export default function PostLayout() {
       <Stack.Screen
         name="update/[id]"
         options={{
-          title: "수정",
+          title: t("Edit Post"),
           headerShown: true,
           headerLeft: () => (
             <Feather

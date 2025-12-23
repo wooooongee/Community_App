@@ -2,12 +2,14 @@ import { colors } from "@/constants";
 import { Ionicons } from "@expo/vector-icons";
 import React from "react";
 import { useFormContext, useWatch } from "react-hook-form";
-import { Pressable, StyleSheet } from "react-native";
+import { Pressable } from "react-native";
 import InputField from "./InputField";
+import { useTranslation } from "react-i18next";
 
 function VoteAttached() {
   const { control, setValue, resetField } = useFormContext();
   const [isVoteAttached] = useWatch({ control, name: ["isVoteAttached"] });
+  const { t } = useTranslation(); 
 
   return (
     <>
@@ -15,7 +17,7 @@ function VoteAttached() {
         <InputField
           variant="outlined"
           editable={false}
-          value="투표가 첨부되었습니다."
+          value={t("Vote attached")}
           rightChild={
             <Pressable
               onPress={() => {
@@ -31,7 +33,5 @@ function VoteAttached() {
     </>
   );
 }
-
-const styles = StyleSheet.create({});
 
 export default VoteAttached;
