@@ -1,16 +1,30 @@
-import { colors } from "@/constants";
+import { darkTheme } from "@/constants/theme";
 import Ionicons from "@expo/vector-icons/Ionicons";
 import { Tabs } from "expo-router";
 import React from "react";
 import { useTranslation } from "react-i18next";
+import { Platform } from "react-native";
 
 export default function TabLayout() {
   const { t } = useTranslation();
+
   return (
     <Tabs
       screenOptions={{
-        tabBarActiveTintColor: colors.ORANGE_600,
+        tabBarActiveTintColor: darkTheme.accent.primary,
+        tabBarInactiveTintColor: darkTheme.text.tertiary,
         headerShown: false,
+        tabBarStyle: {
+          backgroundColor: darkTheme.bg.secondary,
+          borderTopColor: darkTheme.border.default,
+          borderTopWidth: 1,
+          paddingTop: 8,
+          height: Platform.OS === 'ios' ? 88 : 64,
+        },
+        tabBarLabelStyle: {
+          fontSize: 11,
+          fontWeight: '600',
+        },
       }}
     >
       <Tabs.Screen
@@ -20,7 +34,7 @@ export default function TabLayout() {
           tabBarIcon: ({ color, focused }) => (
             <Ionicons
               name={focused ? "home-sharp" : "home-outline"}
-              size={25}
+              size={22}
               color={color}
             />
           ),
@@ -33,7 +47,7 @@ export default function TabLayout() {
           tabBarIcon: ({ color, focused }) => (
             <Ionicons
               name={focused ? "person-circle" : "person-circle-outline"}
-              size={25}
+              size={22}
               color={color}
             />
           ),
@@ -46,7 +60,7 @@ export default function TabLayout() {
           tabBarIcon: ({ color, focused }) => (
             <Ionicons
               name={focused ? "settings" : "settings-outline"}
-              size={25}
+              size={22}
               color={color}
             />
           ),

@@ -1,4 +1,4 @@
-import { colors } from "@/constants";
+import { darkTheme, spacing, radius } from "@/constants/theme";
 import useUploadImages from "@/hooks/queries/useUploadImages";
 import { getFormDataImages } from "@/utils/image";
 import { Ionicons, MaterialCommunityIcons } from "@expo/vector-icons";
@@ -40,36 +40,35 @@ function PostWriteFooter() {
   };
 
   return (
-    <View style={[styles.constainer, { paddingBottom: inset.bottom }]}>
+    <View style={[styles.container, { paddingBottom: inset.bottom || spacing.md }]}>
       <Pressable style={styles.footerIcon} onPress={handleOpenImagePick}>
-        <Ionicons name="camera" size={20} color={colors.BLACK} />
+        <Ionicons name="camera-outline" size={20} color={darkTheme.text.primary} />
       </Pressable>
       <Pressable
         style={styles.footerIcon}
         onPress={() => setValue("isVoteOpen", true)}
       >
-        <MaterialCommunityIcons name={"vote"} size={20} color={colors.BLACK} />
+        <MaterialCommunityIcons name="vote-outline" size={20} color={darkTheme.text.primary} />
       </Pressable>
     </View>
   );
 }
 
 const styles = StyleSheet.create({
-  constainer: {
+  container: {
     width: "100%",
-    paddingTop: 12,
-    bottom: 12,
-    paddingHorizontal: 16,
-    backgroundColor: colors.WHITE,
+    paddingTop: spacing.md,
+    paddingHorizontal: spacing.lg,
+    backgroundColor: darkTheme.bg.primary,
     borderTopWidth: StyleSheet.hairlineWidth,
-    borderColor: colors.GRAY_300,
+    borderColor: darkTheme.border.default,
     flexDirection: "row",
-    gap: 10,
+    gap: spacing.md,
   },
   footerIcon: {
-    backgroundColor: colors.GRAY_100,
-    padding: 10,
-    borderRadius: 5,
+    backgroundColor: darkTheme.bg.tertiary,
+    padding: spacing.md,
+    borderRadius: radius.sm,
   },
 });
 

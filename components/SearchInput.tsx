@@ -1,4 +1,4 @@
-import { colors } from "@/constants";
+import { darkTheme, spacing, radius, typography } from "@/constants/theme";
 import { Ionicons } from "@expo/vector-icons";
 import React from "react";
 import { StyleSheet, TextInput, View, type TextInputProps } from "react-native";
@@ -10,19 +10,14 @@ interface SearchInputProps extends TextInputProps {
 const SearchInput = ({ onSubmit, ...props }: SearchInputProps) => {
   return (
     <View style={styles.container}>
+      <Ionicons name="search" size={18} color={darkTheme.text.tertiary} />
       <TextInput
         style={styles.input}
         autoCapitalize="none"
-        placeholderTextColor={colors.GRAY_500}
+        placeholderTextColor={darkTheme.text.tertiary}
         returnKeyType="search"
         onSubmitEditing={onSubmit}
         {...props}
-      />
-      <Ionicons
-        name="search"
-        size={20}
-        onPress={props.onPress ?? onSubmit}
-        color={colors.GRAY_500}
       />
     </View>
   );
@@ -31,22 +26,21 @@ const SearchInput = ({ onSubmit, ...props }: SearchInputProps) => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    gap: 8,
+    gap: spacing.sm,
     flexDirection: "row",
     alignItems: "center",
-    paddingVertical: 8,
     height: 44,
-    paddingHorizontal: 10,
-    backgroundColor: colors.GRAY_100,
-    borderRadius: 100,
+    paddingHorizontal: spacing.md,
+    backgroundColor: 'rgba(255, 255, 255, 0.08)',
+    borderRadius: radius.full,
+    borderWidth: 1,
+    borderColor: 'rgba(255, 255, 255, 0.08)',
   },
   input: {
     flex: 1,
-    fontSize: 16,
+    fontSize: typography.size.base,
     paddingVertical: 0,
-    paddingLeft: 0,
-    color: colors.BLACK,
-    fontFamily: "Pretendard-Bold",
+    color: darkTheme.text.primary,
   },
 });
 

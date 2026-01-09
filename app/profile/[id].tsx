@@ -2,7 +2,7 @@ import { baseUrls } from "@/api/axios";
 import AuthRoute from "@/components/AuthRoute";
 import Tab from "@/components/Tab";
 import UserFeedList from "@/components/UserFeedList";
-import { colors } from "@/constants";
+import { darkTheme } from "@/constants";
 import useAuth from "@/hooks/queries/useAuth";
 import useGetUserProfile from "@/hooks/queries/useGetUserProfile";
 import { Redirect, useLocalSearchParams, useNavigation } from "expo-router";
@@ -19,7 +19,7 @@ export default function ProfileScreen() {
   useEffect(() => {
     navigation.setOptions({
       headerStyle: {
-        backgroundColor: colors.ORANGE_200,
+        backgroundColor: "rgba(102, 126, 234, 0.3)",
       },
     });
   }, [navigation]);
@@ -61,7 +61,7 @@ export default function ProfileScreen() {
 const styles = StyleSheet.create({
   header: {
     position: "relative",
-    backgroundColor: colors.ORANGE_200,
+    backgroundColor: "rgba(102, 126, 234, 0.3)",
     width: "100%",
     height: 77,
   },
@@ -72,7 +72,7 @@ const styles = StyleSheet.create({
     height: 154,
     borderRadius: 154,
     borderWidth: StyleSheet.hairlineWidth,
-    borderColor: colors.GRAY_500,
+    borderColor: darkTheme.text.tertiary,
   },
   container: {
     marginTop: 77,
@@ -84,9 +84,11 @@ const styles = StyleSheet.create({
   nickname: {
     fontSize: 24,
     fontWeight: "bold",
+    color: darkTheme.text.primary,
   },
   introduce: {
     fontSize: 14,
+    color: darkTheme.text.primary,
   },
   tabContainer: {
     flexDirection: "row",

@@ -1,17 +1,27 @@
-import { colors } from "@/constants";
+import { darkTheme, typography, spacing, radius } from "@/constants/theme";
 import useAuth from "@/hooks/queries/useAuth";
 import useDeletePost from "@/hooks/queries/useDeletePost";
 import useLikePost from "@/hooks/queries/useLikePost";
 import type { Post } from "@/types";
 import { useActionSheet } from "@expo/react-native-action-sheet";
 import { Ionicons, MaterialCommunityIcons, Octicons } from "@expo/vector-icons";
+import { LinearGradient } from "expo-linear-gradient";
 import { router } from "expo-router";
 import React from "react";
-import { Pressable, StyleSheet, Text, View } from "react-native";
+import { Pressable, Share, StyleSheet, Text, View } from "react-native";
+import Animated, {
+  useSharedValue,
+  useAnimatedStyle,
+  withSpring,
+  FadeIn,
+} from "react-native-reanimated";
+import * as Haptics from "expo-haptics";
 import ImagePreviewList from "./ImagePreviewList";
 import Profile from "./Profile";
 import Vote from "./Vote";
-import { useTranslation } from "react-i18next"; 
+import { useTranslation } from "react-i18next";
+
+const AnimatedPressable = Animated.createAnimatedComponent(Pressable);
 
 interface FeedItemProps {
   post: Post;
@@ -27,8 +37,25 @@ function FeedItem({ post, isDetail = false }: FeedItemProps) {
   const deletePost = useDeletePost();
   const likePost = useLikePost();
 
+  // Animation values
+  const cardScale = useSharedValue(1);
+
+  const cardAnimatedStyle = useAnimatedStyle(() => ({
+    transform: [{ scale: cardScale.value }],
+  }));
+
+  const handlePressIn = () => {
+    if (!isDetail) {
+      cardScale.value = withSpring(0.98, { damping: 15, stiffness: 200 });
+    }
+  };
+
+  const handlePressOut = () => {
+    cardScale.value = withSpring(1, { damping: 15, stiffness: 200 });
+  };
+
   const handlePressOption = () => {
-    const options = [t("Delete"), t("Edit"), t("Cancel")];;
+    const options = [t("Delete"), t("Edit"), t("Cancel")];
     const destructiveButtonIndex = 0;
     const cancelButtonIndex = 2;
 
@@ -36,13 +63,12 @@ function FeedItem({ post, isDetail = false }: FeedItemProps) {
       { options, cancelButtonIndex, destructiveButtonIndex },
       (selectedIndex?: number) => {
         switch (selectedIndex) {
-          case destructiveButtonIndex: //삭제
+          case destructiveButtonIndex:
             deletePost.mutate(post.id, {
               onSuccess: () => isDetail && router.back(),
             });
-
             break;
-          case 1: //수정
+          case 1:
             router.push(`/post/update/${post.id}`);
             break;
           case cancelButtonIndex:
@@ -56,6 +82,7 @@ function FeedItem({ post, isDetail = false }: FeedItemProps) {
 
   const handlePressFeed = () => {
     if (!isDetail) {
+      Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
       router.push(`/post/${post.id}`);
     }
   };
@@ -65,87 +92,136 @@ function FeedItem({ post, isDetail = false }: FeedItemProps) {
       router.push("/auth");
       return;
     }
-    if (!isDetail) {
-      router.push(`/post/${post.id}`);
-      return;
-    }
 
+    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
     likePost.mutate(post.id);
   };
 
-  const ContainerComponent = isDetail ? View : Pressable;
+  const handlePressShare = async () => {
+    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+
+    try {
+      await Share.share({
+        title: post.title,
+        message: `${post.title}\n\n${post.description}`,
+        // URL이 있다면 추가 가능: url: `https://yourapp.com/post/${post.id}`
+      });
+    } catch (error) {
+      console.log("Share error:", error);
+    }
+  };
+
+  const ContainerComponent = isDetail ? Animated.View : AnimatedPressable;
 
   return (
-    <ContainerComponent style={styles.container} onPress={handlePressFeed}>
-      <View style={styles.contentContainer}>
-        <Profile
-          imageUri={post.author.imageUri}
-          nickname={post.author.nickname}
-          createdAt={post.createdAt}
-          onPress={() => router.push(`/profile/${post.author.id}`)}
-          option={
-            auth.id === post.author.id && (
-              <Ionicons
-                name="ellipsis-vertical"
-                size={24}
-                color={colors.BLACK}
-                onPress={handlePressOption}
-              />
-            )
-          }
+    <ContainerComponent
+      style={[styles.container, cardAnimatedStyle]}
+      onPress={handlePressFeed}
+      onPressIn={handlePressIn}
+      onPressOut={handlePressOut}
+      entering={FadeIn.duration(300)}
+    >
+      {/* Glass card background */}
+      <View style={styles.glassBackground}>
+        {/* Subtle gradient accent on top border */}
+        <LinearGradient
+          colors={['rgba(102, 126, 234, 0.3)', 'rgba(240, 147, 251, 0.3)', 'transparent']}
+          start={{ x: 0, y: 0 }}
+          end={{ x: 1, y: 1 }}
+          style={styles.topGradient}
         />
-        <Text style={styles.title}>{post.title}</Text>
-        {/* numberOfLines 게시글 내용 3줄까지만 보이게 */}
-        <Text numberOfLines={3} style={styles.description}>
-          {post.description}
-        </Text>
-        <ImagePreviewList imageUris={post.imageUris} />
-        {!isDetail && post.hasVote && (
-          <View style={styles.voteContainer}>
-            <View style={styles.voteTextContainer}>
-              <MaterialCommunityIcons
-                name="vote"
-                size={24}
-                color={colors.ORANGE_600}
-              />
-              <Text style={styles.voteText}>{t("Vote")}</Text>
-            </View>
-            <Text style={styles.voteCountText}>
-              {t("{{count}} participants", { count: post.voteCount })} 
-            </Text>
-          </View>
-        )}
-        {isDetail && post.hasVote && (
-          <Vote
-            postId={post.id}
-            postVotes={post.votes ?? []}
-            voteCount={post.voteCount}
+
+        <View style={styles.contentContainer}>
+          <Profile
+            imageUri={post.author.imageUri}
+            nickname={post.author.nickname}
+            createdAt={post.createdAt}
+            onPress={() => {
+              Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+              router.push(`/profile/${post.author.id}`);
+            }}
+            option={
+              auth.id === post.author.id && (
+                <Ionicons
+                  name="ellipsis-horizontal"
+                  size={20}
+                  color={darkTheme.text.secondary}
+                  onPress={() => {
+                    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+                    handlePressOption();
+                  }}
+                />
+              )
+            }
           />
-        )}
-      </View>
-      <View style={styles.menuContainer}>
-        <Pressable style={styles.menu} onPress={handlePressLike}>
-          <Octicons
-            name={isLiked ? "heart-fill" : "heart"}
-            size={16}
-            color={isLiked ? colors.ORANGE_600 : colors.BLACK}
-          />
-          <Text style={isLiked ? styles.activeMenuText : styles.menuText}>
-            {post.likes.length || t("Like")}
+
+          <Text style={styles.title}>{post.title}</Text>
+          <Text numberOfLines={isDetail ? undefined : 3} style={styles.description}>
+            {post.description}
           </Text>
-        </Pressable>
-        <Pressable style={styles.menu} onPress={handlePressFeed}>
-          <MaterialCommunityIcons
-            name="comment-processing-outline"
-            size={16}
-            color={colors.BLACK}
-          />
-          <Text style={styles.menuText}>{post.commentCount || t("Comment")}</Text>
-        </Pressable>
-        <Pressable style={styles.menu}>
-          <Ionicons name="eye-outline" size={16} color={colors.BLACK} />
-          <Text style={styles.menuText}>{post.viewCount}</Text>
-        </Pressable>
+
+          <ImagePreviewList imageUris={post.imageUris} />
+
+          {!isDetail && post.hasVote && (
+            <View style={styles.votePreview}>
+              <LinearGradient
+                colors={darkTheme.gradient.primary as any}
+                start={{ x: 0, y: 0 }}
+                end={{ x: 1, y: 0 }}
+                style={styles.voteGradient}
+              >
+                <MaterialCommunityIcons name="vote" size={18} color={darkTheme.text.primary} />
+                <Text style={styles.voteText}>{t("Vote")}</Text>
+              </LinearGradient>
+              <Text style={styles.voteCountText}>
+                {t("{{count}} participants", { count: post.voteCount })}
+              </Text>
+            </View>
+          )}
+
+          {isDetail && post.hasVote && (
+            <Vote
+              postId={post.id}
+              postVotes={post.votes ?? []}
+              voteCount={post.voteCount}
+            />
+          )}
+        </View>
+
+        {/* Action bar */}
+        <View style={styles.menuContainer}>
+          <Pressable
+            style={styles.menu}
+            onPress={handlePressLike}
+          >
+            <Octicons
+              name={isLiked ? "heart-fill" : "heart"}
+              size={18}
+              color={isLiked ? darkTheme.accent.secondary : darkTheme.text.secondary}
+            />
+            <Text style={[styles.menuText, isLiked && styles.likedText]}>
+              {post.likes.length || ""}
+            </Text>
+          </Pressable>
+
+          <Pressable style={styles.menu} onPress={handlePressFeed}>
+            <Ionicons
+              name="chatbubble-outline"
+              size={18}
+              color={darkTheme.text.secondary}
+            />
+            <Text style={styles.menuText}>{post.commentCount || ""}</Text>
+          </Pressable>
+
+          <Pressable style={styles.menu}>
+            <Ionicons name="eye-outline" size={18} color={darkTheme.text.secondary} />
+            <Text style={styles.menuText}>{post.viewCount}</Text>
+          </Pressable>
+
+          <Pressable style={styles.menu} onPress={handlePressShare}>
+            <Ionicons name="share-outline" size={18} color={darkTheme.text.secondary} />
+          </Pressable>
+        </View>
       </View>
     </ContainerComponent>
   );
@@ -153,71 +229,88 @@ function FeedItem({ post, isDetail = false }: FeedItemProps) {
 
 const styles = StyleSheet.create({
   container: {
-    backgroundColor: colors.WHITE,
+    marginHorizontal: spacing.md,
+    marginBottom: spacing.md,
+  },
+  glassBackground: {
+    backgroundColor: darkTheme.bg.secondary,
+    borderRadius: radius.xl,
+    borderWidth: 1,
+    borderColor: darkTheme.border.default,
+    overflow: 'hidden',
+  },
+  topGradient: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    height: 2,
   },
   contentContainer: {
-    padding: 16,
+    padding: spacing.lg,
+  },
+  title: {
+    fontSize: typography.size.md,
+    color: darkTheme.text.primary,
+    fontWeight: typography.weight.semibold,
+    marginTop: spacing.md,
+    marginBottom: spacing.sm,
+    letterSpacing: typography.letterSpacing.tight,
+  },
+  description: {
+    fontSize: typography.size.base,
+    color: darkTheme.text.secondary,
+    lineHeight: typography.size.base * 1.5,
+    marginBottom: spacing.md,
   },
   menuContainer: {
     flexDirection: "row",
     alignItems: "center",
-    justifyContent: "space-around",
-    borderTopColor: colors.GRAY_300,
-    borderTopWidth: StyleSheet.hairlineWidth,
-  },
-  title: {
-    fontSize: 18,
-    color: colors.BLACK,
-    fontWeight: "600",
-    marginVertical: 8,
-  },
-  description: {
-    fontSize: 16,
-    color: colors.BLACK,
-    marginBottom: 14,
+    paddingHorizontal: spacing.md,
+    paddingVertical: spacing.md,
+    borderTopWidth: 1,
+    borderTopColor: darkTheme.border.default,
   },
   menu: {
     flexDirection: "row",
     alignItems: "center",
-    justifyContent: "center",
-    paddingVertical: 16,
-    width: "33%",
-    gap: 4,
+    paddingVertical: spacing.xs,
+    paddingHorizontal: spacing.md,
+    gap: spacing.xs,
+    minWidth: 50,
   },
   menuText: {
-    fontSize: 14,
-    color: colors.GRAY_700,
+    fontSize: typography.size.sm,
+    color: darkTheme.text.tertiary,
+    fontWeight: typography.weight.medium,
+    minWidth: 16,
   },
-  activeMenuText: {
-    fontWeight: "500",
-    color: colors.ORANGE_600,
+  likedText: {
+    color: darkTheme.accent.secondary,
+    fontWeight: typography.weight.semibold,
   },
-  voteContainer: {
+  votePreview: {
     flexDirection: "row",
     alignItems: "center",
-    marginVertical: 14,
-    gap: 16,
-    borderWidth: 1,
-    borderRadius: 8,
-    borderColor: colors.ORANGE_600,
-    backgroundColor: colors.ORANGE_100,
-    paddingVertical: 10,
-    paddingHorizontal: 16,
+    gap: spacing.md,
+    marginTop: spacing.sm,
   },
-  voteTextContainer: {
-    gap: 6,
-    flexDirection: "row",
-    alignItems: "center",
+  voteGradient: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: spacing.sm,
+    paddingVertical: spacing.sm,
+    paddingHorizontal: spacing.md,
+    borderRadius: radius.md,
   },
   voteText: {
-    fontSize: 14,
-    fontWeight: "bold",
-    color: colors.ORANGE_600,
+    fontSize: typography.size.sm,
+    fontWeight: typography.weight.semibold,
+    color: darkTheme.text.primary,
   },
   voteCountText: {
-    fontSize: 14,
-    fontWeight: "black",
-    color: colors.BLACK,
+    fontSize: typography.size.sm,
+    color: darkTheme.text.tertiary,
   },
 });
 

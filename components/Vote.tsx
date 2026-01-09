@@ -1,4 +1,4 @@
-import { colors } from "@/constants";
+import { darkTheme, spacing, typography, radius } from "@/constants/theme";
 import useAuth from "@/hooks/queries/useAuth";
 import useCreateVote from "@/hooks/queries/useCreateVote";
 import type { PostVote } from "@/types";
@@ -30,7 +30,7 @@ const Vote = ({ postId, postVotes, voteCount }: VoteProps) => {
       <View style={styles.label}>
         <Text style={styles.labelTitle}>{t("Vote")}</Text>
         <View style={styles.labelCount}>
-          <Feather name="user" size={14} color={colors.BLACK} />
+          <Feather name="user" size={14} color={darkTheme.text.secondary} />
           <Text style={styles.labelCountText}>{t("{{count}} participants", { count: voteCount })} </Text>
         </View>
       </View>
@@ -70,31 +70,33 @@ const Vote = ({ postId, postVotes, voteCount }: VoteProps) => {
 
 const styles = StyleSheet.create({
   container: {
-    marginTop: 16,
+    marginTop: spacing.lg,
     borderWidth: 1,
-    borderColor: colors.GRAY_300,
-    borderRadius: 8,
-    padding: 16,
-    gap: 15,
+    borderColor: darkTheme.border.default,
+    borderRadius: radius.md,
+    padding: spacing.lg,
+    gap: spacing.md,
+    backgroundColor: darkTheme.bg.tertiary,
   },
   label: {
     flexDirection: "row",
     alignItems: "center",
-    gap: 12,
+    gap: spacing.md,
   },
   labelTitle: {
-    fontSize: 12,
-    fontWeight: "bold",
-    color: colors.ORANGE_600,
+    fontSize: typography.size.sm,
+    fontWeight: typography.weight.bold,
+    color: darkTheme.accent.primary,
   },
   labelCount: {
     flexDirection: "row",
     alignItems: "center",
-    gap: 2,
+    gap: spacing.xs,
   },
   labelCountText: {
-    fontSize: 12,
-    fontWeight: "bold",
+    fontSize: typography.size.sm,
+    fontWeight: typography.weight.bold,
+    color: darkTheme.text.secondary,
   },
 });
 

@@ -1,13 +1,13 @@
-import { colors } from "@/constants";
+import { darkTheme } from "@/constants";
 import { Stack } from "expo-router";
 
 export default function ImageLayout() {
   return (
     <Stack
       screenOptions={{
-        headerTintColor: colors.BLACK,
+        headerTintColor: darkTheme.bg.primary,
         contentStyle: {
-          backgroundColor: colors.WHITE,
+          backgroundColor: darkTheme.text.primary,
         },
       }}
     >

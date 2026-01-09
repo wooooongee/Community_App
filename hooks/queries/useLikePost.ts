@@ -2,14 +2,18 @@ import { likePost } from "@/api/post";
 import queryClient from "@/api/queryClient";
 import { queryKeys } from "@/constants";
 import type { Post, Profile } from "@/types";
-import { useMutation } from "@tanstack/react-query";
+import { useMutation, InfiniteData } from "@tanstack/react-query";
 
 function useLikePost() {
   return useMutation({
     mutationFn: likePost,
     onMutate: async (postId) => {
+      // Cancel both queries
       await queryClient.cancelQueries({
         queryKey: [queryKeys.POST, queryKeys.GET_POST, postId],
+      });
+      await queryClient.cancelQueries({
+        queryKey: [queryKeys.POST, queryKeys.GET_POSTS],
       });
 
       const user = queryClient.getQueryData<Profile>([
@@ -17,35 +21,84 @@ function useLikePost() {
         queryKeys.GET_ME,
       ]);
       const userId = Number(user?.id);
+
+      // Update detail page query
       const previousPost = queryClient.getQueryData<Post>([
         queryKeys.POST,
         queryKeys.GET_POST,
         postId,
       ]);
 
-      const newPost = { ...previousPost };
+      if (previousPost) {
+        const newPost = { ...previousPost, likes: [...previousPost.likes] };
+        const likedIndex = newPost.likes.findIndex(
+          (like) => like.userId === userId
+        );
 
-      const likedIndex =
-        previousPost?.likes.findIndex((like) => like.userId === userId) ?? -1;
+        if (likedIndex >= 0) {
+          newPost.likes.splice(likedIndex, 1);
+        } else {
+          newPost.likes.push({ userId });
+        }
 
-      likedIndex >= 0
-        ? newPost.likes?.splice(likedIndex, 1)
-        : newPost.likes?.push({ userId });
+        queryClient.setQueryData(
+          [queryKeys.POST, queryKeys.GET_POST, postId],
+          newPost
+        );
+      }
 
-      queryClient.setQueryData(
-        [queryKeys.POST, queryKeys.GET_POST, postId],
-        newPost
-      );
+      // Update infinite feed list query
+      const previousPosts = queryClient.getQueryData<InfiniteData<Post[]>>([
+        queryKeys.POST,
+        queryKeys.GET_POSTS,
+      ]);
 
-      return { previousPost, newPost };
+      if (previousPosts) {
+        const newPages = previousPosts.pages.map((page) =>
+          page.map((post) => {
+            if (post.id === postId) {
+              const newLikes = [...post.likes];
+              const likedIndex = newLikes.findIndex(
+                (like) => like.userId === userId
+              );
+
+              if (likedIndex >= 0) {
+                newLikes.splice(likedIndex, 1);
+              } else {
+                newLikes.push({ userId });
+              }
+
+              return { ...post, likes: newLikes };
+            }
+            return post;
+          })
+        );
+
+        queryClient.setQueryData([queryKeys.POST, queryKeys.GET_POSTS], {
+          ...previousPosts,
+          pages: newPages,
+        });
+      }
+
+      return { previousPost, previousPosts };
     },
-    onError: (err, newPost, context) => {
-      queryClient.setQueryData(
-        [queryKeys.POST, queryKeys.GET_POST, context?.previousPost?.id],
-        context?.previousPost
-      );
+    onError: (err, postId, context) => {
+      // Rollback detail page
+      if (context?.previousPost) {
+        queryClient.setQueryData(
+          [queryKeys.POST, queryKeys.GET_POST, postId],
+          context.previousPost
+        );
+      }
+      // Rollback feed list
+      if (context?.previousPosts) {
+        queryClient.setQueryData(
+          [queryKeys.POST, queryKeys.GET_POSTS],
+          context.previousPosts
+        );
+      }
     },
-    onSettled: (data, error, variables, context) => {
+    onSettled: (data, error, variables) => {
       queryClient.invalidateQueries({
         queryKey: [queryKeys.POST, queryKeys.GET_POST, variables],
       });

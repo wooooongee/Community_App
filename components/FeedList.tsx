@@ -1,9 +1,13 @@
-import { colors } from "@/constants";
+import { darkTheme, spacing } from "@/constants/theme";
 import useGetInfinitePosts from "@/hooks/queries/useGetInfinitePosts";
+import type { Post } from "@/types";
 import { useScrollToTop } from "@react-navigation/native";
-import React, { useRef, useState } from "react";
-import { FlatList, StyleSheet } from "react-native";
+import React, { useRef, useState, useCallback } from "react";
+import { FlatList, StyleSheet, View, ActivityIndicator, NativeSyntheticEvent, NativeScrollEvent } from "react-native";
+import Animated, { FadeInUp, FadeIn, FadeOut, useAnimatedStyle, useSharedValue, withSpring, interpolate, Extrapolation } from "react-native-reanimated";
 import FeedItem from "./FeedItem";
+
+const REFRESH_THRESHOLD = 80;
 
 function FeedList() {
   const {
@@ -12,17 +16,22 @@ function FeedList() {
     hasNextPage,
     isFetchingNextPage,
     refetch,
+    isLoading,
   } = useGetInfinitePosts();
 
   const [isRefreshing, setIsRefreshing] = useState(false);
-  const ref = useRef<FlatList | null>(null);
+  const [showPullIndicator, setShowPullIndicator] = useState(false);
+  const ref = useRef<FlatList<Post> | null>(null);
   useScrollToTop(ref);
 
-  const handleRefresh = async () => {
+  const scrollY = useSharedValue(0);
+  const isReadyToRefresh = useSharedValue(false);
+
+  const handleRefresh = useCallback(async () => {
     setIsRefreshing(true);
     await refetch();
     setIsRefreshing(false);
-  };
+  }, [refetch]);
 
   const handleEndReached = () => {
     if (hasNextPage && !isFetchingNextPage) {
@@ -30,27 +39,124 @@ function FeedList() {
     }
   };
 
+  const handleScroll = useCallback((event: NativeSyntheticEvent<NativeScrollEvent>) => {
+    const offsetY = event.nativeEvent.contentOffset.y;
+    scrollY.value = offsetY;
+
+    if (offsetY < -REFRESH_THRESHOLD && !isRefreshing) {
+      isReadyToRefresh.value = true;
+      setShowPullIndicator(true);
+    } else if (offsetY >= 0) {
+      setShowPullIndicator(false);
+    }
+  }, [isRefreshing, scrollY, isReadyToRefresh]);
+
+  const handleScrollEndDrag = useCallback(() => {
+    if (isReadyToRefresh.value && !isRefreshing) {
+      isReadyToRefresh.value = false;
+      handleRefresh();
+    }
+  }, [isReadyToRefresh, isRefreshing, handleRefresh]);
+
+  const pullIndicatorStyle = useAnimatedStyle(() => {
+    const pullProgress = interpolate(
+      scrollY.value,
+      [-REFRESH_THRESHOLD, 0],
+      [1, 0],
+      Extrapolation.CLAMP
+    );
+    return {
+      opacity: pullProgress,
+      transform: [{ scale: pullProgress }],
+    };
+  });
+
+  // Show loading indicator
+  if (isLoading) {
+    return (
+      <View style={styles.loadingContainer}>
+        <ActivityIndicator size="large" color={darkTheme.accent.primary} />
+      </View>
+    );
+  }
+
   return (
-    <FlatList
-      ref={ref}
-      data={posts?.pages.flat()}
-      renderItem={({ item }) => <FeedItem post={item} />}
-      contentContainerStyle={styles.contentContainer}
-      // keyExtractor 는 기존 리액트에서 id 값이 다른요소 구분하기위해 key값 부여하는거랑 같음
-      keyExtractor={(item) => String(item.id)}
-      onEndReached={handleEndReached}
-      onEndReachedThreshold={0.5}
-      refreshing={isRefreshing}
-      onRefresh={handleRefresh}
-    />
+    <View style={styles.container}>
+      {/* Pull to refresh indicator */}
+      {(showPullIndicator || isRefreshing) && (
+        <Animated.View
+          style={[styles.refreshIndicator, pullIndicatorStyle]}
+          entering={FadeIn.duration(200)}
+          exiting={FadeOut.duration(200)}
+        >
+          <ActivityIndicator size="small" color="#FFFFFF" />
+        </Animated.View>
+      )}
+
+      <FlatList
+        ref={ref}
+        style={styles.list}
+        data={posts?.pages.flat()}
+        renderItem={({ item, index }) => (
+          <Animated.View
+            entering={FadeInUp.delay(index * 80)
+              .duration(400)
+              .springify()
+              .damping(12)}
+          >
+            <FeedItem post={item} />
+          </Animated.View>
+        )}
+        contentContainerStyle={styles.contentContainer}
+        keyExtractor={(item) => String(item.id)}
+        onEndReached={handleEndReached}
+        onEndReachedThreshold={0.5}
+        onScroll={handleScroll}
+        onScrollEndDrag={handleScrollEndDrag}
+        scrollEventThrottle={16}
+        showsVerticalScrollIndicator={false}
+        ListFooterComponent={
+          isFetchingNextPage ? (
+            <View style={styles.footerLoading}>
+              <ActivityIndicator size="small" color={darkTheme.accent.primary} />
+            </View>
+          ) : null
+        }
+      />
+    </View>
   );
 }
 
 const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: darkTheme.bg.primary,
+  },
+  list: {
+    flex: 1,
+  },
   contentContainer: {
-    paddingVertical: 12,
-    backgroundColor: colors.GRAY_200,
-    gap: 12,
+    paddingTop: spacing.md,
+    paddingBottom: spacing['4xl'],
+    flexGrow: 1,
+  },
+  loadingContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: darkTheme.bg.primary,
+  },
+  footerLoading: {
+    paddingVertical: spacing.xl,
+  },
+  refreshIndicator: {
+    position: 'absolute',
+    top: spacing.xl,
+    left: 0,
+    right: 0,
+    zIndex: 100,
+    alignItems: 'center',
+    justifyContent: 'center',
   },
 });
 

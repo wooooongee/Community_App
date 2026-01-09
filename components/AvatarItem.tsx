@@ -1,5 +1,5 @@
 import { baseUrls } from "@/api/axios";
-import { colors } from "@/constants";
+import { darkTheme, radius, spacing } from "@/constants/theme";
 import React from "react";
 import {
   Dimensions,
@@ -35,15 +35,17 @@ function AvatarItem({ uri, isSelected, ...props }: AvatarItemProps) {
 
 const styles = StyleSheet.create({
   container: {
-    margin: 5,
+    margin: spacing.xs,
     width: Dimensions.get("window").width / 3 - 15,
     height: Dimensions.get("window").width / 3 - 15,
     borderWidth: 2,
-    borderRadius: 10,
-    borderColor: colors.GRAY_200,
+    borderRadius: radius.md,
+    borderColor: darkTheme.border.default,
+    backgroundColor: darkTheme.bg.secondary,
   },
   selectedContainer: {
-    borderColor: colors.ORANGE_600,
+    borderColor: darkTheme.accent.primary,
+    borderWidth: 3,
   },
   image: {
     width: "100%",

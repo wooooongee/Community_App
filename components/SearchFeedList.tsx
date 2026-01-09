@@ -1,9 +1,9 @@
-import { colors } from "@/constants";
+import { darkTheme, spacing } from "@/constants/theme";
 import useGetInfiniteSearchPosts from "@/hooks/queries/useGetInfiniteSearchPosts";
 import { Feather } from "@expo/vector-icons";
 import { router } from "expo-router";
 import React, { useState } from "react";
-import { FlatList, Platform, StatusBar, StyleSheet, View } from "react-native";
+import { FlatList, StyleSheet, View } from "react-native";
 import FeedItem from "./FeedItem";
 import SearchInput from "./SearchInput";
 
@@ -37,8 +37,8 @@ function SearchFeedList() {
         <View style={styles.arrowLeft}>
           <Feather
             name="arrow-left"
-            size={28}
-            color={colors.BLACK}
+            size={24}
+            color={darkTheme.text.primary}
             onPress={() => router.back()}
           />
         </View>
@@ -55,12 +55,12 @@ function SearchFeedList() {
         data={posts?.pages.flat()}
         renderItem={({ item }) => <FeedItem post={item} />}
         contentContainerStyle={styles.contentContainer}
-        // keyExtractor 는 기존 리액트에서 id 값이 다른요소 구분하기위해 key값 부여하는거랑 같음
         keyExtractor={(item) => String(item.id)}
         onEndReached={handleEndReached}
         onEndReachedThreshold={0.5}
         refreshing={isRefreshing}
         onRefresh={handleRefresh}
+        showsVerticalScrollIndicator={false}
       />
     </>
   );
@@ -68,18 +68,18 @@ function SearchFeedList() {
 
 const styles = StyleSheet.create({
   contentContainer: {
-    paddingVertical: 12,
-    backgroundColor: colors.GRAY_200,
-    gap: 12,
+    paddingVertical: spacing.md,
+    backgroundColor: darkTheme.bg.primary,
+    gap: spacing.md,
+    flexGrow: 1,
   },
   inputContainer: {
-    marginBottom: 8,
-    paddingHorizontal: 16,
-    gap: 8,
-    backgroundColor: colors.WHITE,
-    height: 44,
+    paddingHorizontal: spacing.lg,
+    paddingBottom: spacing.md,
+    gap: spacing.md,
+    backgroundColor: darkTheme.bg.primary,
     flexDirection: "row",
-    paddingTop: Platform.OS === "android" ? StatusBar.currentHeight : 0,
+    alignItems: "center",
   },
   arrowLeft: {
     alignItems: "center",

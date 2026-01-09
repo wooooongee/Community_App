@@ -1,4 +1,5 @@
 import CustomButton from "@/components/CustomButton";
+import { darkTheme, spacing } from "@/constants/theme";
 import { Link, router } from "expo-router";
 import { Image, StyleSheet, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
@@ -28,6 +29,7 @@ export default function AuthScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    backgroundColor: darkTheme.bg.primary,
   },
   logo: {
     width: 112,
@@ -41,10 +43,11 @@ const styles = StyleSheet.create({
   signupText: {
     textAlign: "center",
     textDecorationLine: "underline",
-    marginTop: 20,
+    marginTop: spacing.xl,
+    color: darkTheme.text.secondary,
   },
   buttonContainer: {
-    paddingHorizontal: 32,
+    paddingHorizontal: spacing['2xl'],
     flex: 1,
   },
 });

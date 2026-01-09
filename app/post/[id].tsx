@@ -2,7 +2,7 @@ import AuthRoute from "@/components/AuthRoute";
 import CommentItem from "@/components/CommentItem";
 import FeedItem from "@/components/FeedItem";
 import InputField from "@/components/InputField";
-import { colors } from "@/constants";
+import { darkTheme, spacing, typography, radius } from "@/constants/theme";
 import useCreateComment from "@/hooks/queries/useCreateComment";
 import useGetPost from "@/hooks/queries/useGetPost";
 import useKeyboard from "@/hooks/queries/useKeyboard";
@@ -22,6 +22,7 @@ import {
   View,
 } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
+import { LinearGradient } from "expo-linear-gradient";
 
 export default function PostDetailScreen() {
   const { id } = useLocalSearchParams();
@@ -123,10 +124,16 @@ export default function PostDetailScreen() {
               rightChild={
                 <Pressable
                   disabled={!content}
-                  style={styles.inputButtonContainer}
                   onPress={handleSubmitComment}
                 >
-                  <Text style={styles.inputButtonText}>{t("Post")}</Text>
+                  <LinearGradient
+                    colors={content ? darkTheme.gradient.primary as any : [darkTheme.bg.tertiary, darkTheme.bg.tertiary]}
+                    start={{ x: 0, y: 0 }}
+                    end={{ x: 1, y: 1 }}
+                    style={styles.inputButtonContainer}
+                  >
+                    <Text style={[styles.inputButtonText, !content && styles.inputButtonDisabled]}>{t("Post")}</Text>
+                  </LinearGradient>
                 </Pressable>
               }
             />
@@ -140,39 +147,47 @@ export default function PostDetailScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: colors.WHITE,
+    backgroundColor: darkTheme.bg.primary,
   },
   awareScrollViewContainer: {
-    backgroundColor: colors.GRAY_200,
+    backgroundColor: darkTheme.bg.primary,
     flexGrow: 1,
   },
   scrollViewContainer: {
-    backgroundColor: colors.GRAY_200,
+    backgroundColor: darkTheme.bg.primary,
   },
   commentCount: {
-    marginTop: 12,
-    backgroundColor: colors.WHITE,
-    paddingVertical: 12,
-    paddingHorizontal: 16,
-    fontSize: 16,
-    fontWeight: "bold",
+    marginTop: spacing.sm,
+    backgroundColor: darkTheme.bg.secondary,
+    paddingVertical: spacing.md,
+    paddingHorizontal: spacing.lg,
+    fontSize: typography.size.md,
+    fontWeight: typography.weight.bold,
+    color: darkTheme.text.primary,
+    borderTopWidth: StyleSheet.hairlineWidth,
+    borderBottomWidth: StyleSheet.hairlineWidth,
+    borderColor: darkTheme.border.default,
   },
   commentInputContainer: {
     width: "100%",
-    borderTopColor: colors.GRAY_200,
+    borderTopColor: darkTheme.border.default,
     borderTopWidth: StyleSheet.hairlineWidth,
-    backgroundColor: colors.WHITE,
-    padding: 16,
+    backgroundColor: darkTheme.bg.secondary,
+    padding: spacing.md,
     bottom: 0,
     position: "absolute",
   },
   inputButtonContainer: {
-    backgroundColor: colors.ORANGE_600,
-    padding: 8,
-    borderRadius: 5,
+    paddingVertical: spacing.sm,
+    paddingHorizontal: spacing.md,
+    borderRadius: radius.sm,
   },
   inputButtonText: {
-    color: colors.WHITE,
-    fontWeight: "bold",
+    color: darkTheme.text.primary,
+    fontWeight: typography.weight.bold,
+    fontSize: typography.size.sm,
+  },
+  inputButtonDisabled: {
+    color: darkTheme.text.tertiary,
   },
 });

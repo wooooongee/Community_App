@@ -1,4 +1,4 @@
-import { colors } from "@/constants";
+import { darkTheme, spacing, typography } from "@/constants/theme";
 import useAuth from "@/hooks/queries/useAuth";
 import useDeleteComment from "@/hooks/queries/useDeleteComment";
 import type { Comment } from "@/types";
@@ -6,10 +6,10 @@ import { useActionSheet } from "@expo/react-native-action-sheet";
 import { Ionicons, MaterialCommunityIcons } from "@expo/vector-icons";
 import { router } from "expo-router";
 import React from "react";
+import { useTranslation } from "react-i18next";
 import { Pressable, StyleSheet, Text, View } from "react-native";
 import InputField from "./InputField";
 import Profile from "./Profile";
-import { useTranslation } from "react-i18next";
 
 interface CommentItemProps {
   comment: Comment;
@@ -27,22 +27,22 @@ const CommentItem = ({
   isReply = false,
 }: CommentItemProps) => {
   const { auth } = useAuth();
-   const { t } = useTranslation(); 
+  const { t } = useTranslation();
   const { showActionSheetWithOptions } = useActionSheet();
   const deleteComment = useDeleteComment();
 
   const getCommentBackground = () => {
     if (parentCommentId === comment.id) {
-      return colors.ORANGE_100;
+      return darkTheme.bg.primary;
     }
     if (isReply) {
-      return colors.GRAY_50;
+      return darkTheme.bg.tertiary;
     }
-    return colors.WHITE;
+    return darkTheme.bg.secondary;
   };
 
   const handlePressOption = () => {
-    const options = [t("Delete"), t("Cancel")];  
+    const options = [t("Delete"), t("Cancel")];
     const destructiveButtonIndex = 0;
     const cancelButtonIndex = 1;
 
@@ -75,7 +75,7 @@ const CommentItem = ({
           <MaterialCommunityIcons
             name="arrow-right-bottom"
             size={24}
-            color={"black"}
+            color={darkTheme.text.tertiary}
           />
         )}
         <Profile
@@ -93,7 +93,7 @@ const CommentItem = ({
               <Ionicons
                 name="ellipsis-vertical"
                 size={24}
-                color={"black"}
+                color={darkTheme.text.secondary}
                 onPress={handlePressOption}
               />
             )
@@ -102,7 +102,11 @@ const CommentItem = ({
       </View>
       <InputField
         editable={false}
-        value={comment.isDeleted ? "삭제된 댓글입니다." : comment.content}
+        value={
+          comment.isDeleted
+            ? t("This comment has been deleted.")
+            : comment.content
+        }
       />
       {!comment.isDeleted && !isReply && (
         <View style={styles.replyButtonContainer}>
@@ -122,31 +126,31 @@ const CommentItem = ({
 
 const styles = StyleSheet.create({
   container: {
-    backgroundColor: colors.WHITE,
-    padding: 16,
-    gap: 12,
-    borderColor: colors.GRAY_200,
-    borderWidth: 1,
+    backgroundColor: darkTheme.bg.secondary,
+    padding: spacing.lg,
+    gap: spacing.md,
+    borderColor: darkTheme.border.default,
+    borderBottomWidth: StyleSheet.hairlineWidth,
   },
   profileContainer: {
     flexDirection: "row",
     alignItems: "center",
-    gap: 10,
+    gap: spacing.sm,
   },
   replyButtonContainer: {
     flexDirection: "row",
-    gap: 10,
+    gap: spacing.md,
     alignItems: "center",
   },
   replyButton: {
-    fontWeight: "bold",
-    color: colors.ORANGE_600,
-    fontSize: 12,
+    fontWeight: typography.weight.bold,
+    color: darkTheme.accent.primary,
+    fontSize: typography.size.sm,
   },
   cancelButton: {
-    fontWeight: "bold",
-    color: colors.BLACK,
-    fontSize: 12,
+    fontWeight: typography.weight.bold,
+    color: darkTheme.text.tertiary,
+    fontSize: typography.size.sm,
   },
 });
 

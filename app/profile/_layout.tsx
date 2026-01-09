@@ -1,5 +1,5 @@
-import { colors } from "@/constants";
-import { Foundation } from "@expo/vector-icons";
+import { darkTheme, typography } from "@/constants/theme";
+import { Ionicons } from "@expo/vector-icons";
 import { router, Stack } from "expo-router";
 import { useTranslation } from "react-i18next";
 import { Pressable } from "react-native";
@@ -9,9 +9,16 @@ export default function ProfileLayout() {
   return (
     <Stack
       screenOptions={{
-        headerTintColor: colors.BLACK,
+        headerTintColor: darkTheme.text.primary,
+        headerStyle: {
+          backgroundColor: darkTheme.bg.primary,
+        },
+        headerTitleStyle: {
+          color: darkTheme.text.primary,
+          fontWeight: typography.weight.semibold,
+        },
         contentStyle: {
-          backgroundColor: colors.WHITE,
+          backgroundColor: darkTheme.bg.primary,
         },
       }}
     >
@@ -24,7 +31,7 @@ export default function ProfileLayout() {
           headerTitle: "",
           headerLeft: () => (
             <Pressable onPress={() => router.back()}>
-              <Foundation name="arrow-left" size={28} color={"black"} />
+              <Ionicons name="chevron-back" size={28} color={darkTheme.text.primary} />
             </Pressable>
           ),
         }}
@@ -38,7 +45,7 @@ export default function ProfileLayout() {
           headerTitle: t("Edit Profile"),
           headerLeft: () => (
             <Pressable onPress={() => router.back()}>
-              <Foundation name="arrow-left" size={28} color={"black"} />
+              <Ionicons name="chevron-back" size={28} color={darkTheme.text.primary} />
             </Pressable>
           ),
         }}
@@ -52,7 +59,7 @@ export default function ProfileLayout() {
           headerTitle: "",
           headerLeft: () => (
             <Pressable onPress={() => router.back()}>
-              <Foundation name="arrow-left" size={28} color={"black"} />
+              <Ionicons name="chevron-back" size={28} color={darkTheme.text.primary} />
             </Pressable>
           ),
         }}

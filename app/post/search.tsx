@@ -1,5 +1,5 @@
 import SearchFeedList from "@/components/SearchFeedList";
-import { colors } from "@/constants";
+import { darkTheme } from "@/constants/theme";
 import { SafeAreaView, StyleSheet } from "react-native";
 
 export default function SearchScreen() {
@@ -11,6 +11,6 @@ export default function SearchScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: colors.WHITE,
+    backgroundColor: darkTheme.bg.primary,
   },
 });

@@ -1,4 +1,4 @@
-import { colors } from "@/constants";
+import { darkTheme } from "@/constants";
 import useGetInfiniteUserPosts from "@/hooks/queries/useGetInfiniteUserPosts";
 import { useScrollToTop } from "@react-navigation/native";
 import React, { useRef, useState } from "react";
@@ -58,11 +58,11 @@ function UserFeedList({ userId }: UserFeedListProps) {
 const styles = StyleSheet.create({
   contentContainer: {
     paddingVertical: 12,
-    backgroundColor: colors.GRAY_200,
+    backgroundColor: darkTheme.border.light,
     gap: 12,
   },
   emptyContainer: {
-    backgroundColor: colors.WHITE,
+    backgroundColor: darkTheme.text.primary,
     padding: 16,
     alignItems: "center",
   },

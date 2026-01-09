@@ -3,7 +3,7 @@ import CustomButton from "@/components/CustomButton";
 import FixedBottomCTA from "@/components/FixedBottomCTA";
 import IntroduceInput from "@/components/IntroduceInput";
 import NicknameInput from "@/components/NicknameInput";
-import { colors } from "@/constants";
+import { darkTheme, spacing } from "@/constants/theme";
 import useAuth from "@/hooks/queries/useAuth";
 import { router } from "expo-router";
 import { FormProvider, useForm } from "react-hook-form";
@@ -76,21 +76,22 @@ export default function ProfileUpdateScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    margin: 16,
+    margin: spacing.lg,
+    backgroundColor: darkTheme.bg.primary,
   },
   avatarContainer: {
     alignItems: "center",
-    marginTop: 16,
+    marginTop: spacing.lg,
     position: "relative",
   },
   avatar: {
     width: 154,
     height: 154,
-    borderRadius: 154,
-    borderWidth: StyleSheet.hairlineWidth,
-    borderColor: colors.GRAY_500,
+    borderRadius: 77,
+    borderWidth: 3,
+    borderColor: darkTheme.border.default,
   },
   inputContainer: {
-    gap: 16,
+    gap: spacing.lg,
   },
 });

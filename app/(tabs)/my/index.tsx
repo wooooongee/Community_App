@@ -4,28 +4,51 @@ import CustomButton from "@/components/CustomButton";
 import LikedFeedList from "@/components/LikedFeedList";
 import MyFeedList from "@/components/MyFeedList";
 import Tab from "@/components/Tab";
-import { colors } from "@/constants";
+import { darkTheme, spacing, typography } from "@/constants/theme";
 import useAuth from "@/hooks/queries/useAuth";
 import { router } from "expo-router";
 import { useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Image, Platform, StyleSheet, Text, View } from "react-native";
 import PagerView from "react-native-pager-view";
+import { LinearGradient } from "expo-linear-gradient";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
+
+const HEADER_BASE_HEIGHT = 120;
+const AVATAR_SIZE = 120;
 
 export default function MyScreen() {
   const { auth } = useAuth();
   const [currentTab, setCurrentTab] = useState(0);
   const pagerRef = useRef<PagerView | null>(null);
   const { t } = useTranslation();
+  const insets = useSafeAreaInsets();
 
   const handlePressTab = (index: number) => {
     pagerRef.current?.setPage(index);
     setCurrentTab(index);
   };
 
+  const headerHeight = HEADER_BASE_HEIGHT + insets.top;
+  const avatarTop = headerHeight - AVATAR_SIZE / 2;
+
   return (
     <AuthRoute>
-      <View style={styles.header}>
+      <View style={styles.headerWrapper}>
+        <LinearGradient
+          colors={darkTheme.gradient.primary as any}
+          start={{ x: 0, y: 0 }}
+          end={{ x: 1, y: 1 }}
+          style={[styles.header, { height: headerHeight }]}
+        >
+          <CustomButton
+            size="medium"
+            variant="outlined"
+            label={t("Edit Profile")}
+            style={{ position: "absolute", right: 16, bottom: 16 }}
+            onPress={() => router.push("/profile/update")}
+          />
+        </LinearGradient>
         <Image
           source={
             auth.imageUri
@@ -36,14 +59,7 @@ export default function MyScreen() {
                 }
               : require("@/assets/images/default-avatar.png")
           }
-          style={styles.avatar}
-        />
-        <CustomButton
-          size="medium"
-          variant="outlined"
-          label={t("Edit Profile")}
-          style={{ position: "absolute", right: 16, bottom: 16 }}
-          onPress={() => router.push("/profile/update")}
+          style={[styles.avatar, { top: avatarTop }]}
         />
       </View>
       <View style={styles.container}>
@@ -75,37 +91,43 @@ export default function MyScreen() {
 }
 
 const styles = StyleSheet.create({
+  headerWrapper: {
+    position: "relative",
+    backgroundColor: darkTheme.bg.primary,
+  },
   header: {
     position: "relative",
-    backgroundColor: colors.ORANGE_200,
     width: "100%",
-    height: 154,
   },
   avatar: {
     position: "absolute",
-    top: 77,
-    left: 16,
-    width: 154,
-    height: 154,
-    borderRadius: 154,
-    borderWidth: StyleSheet.hairlineWidth,
-    borderColor: colors.GRAY_500,
+    left: spacing.lg,
+    width: AVATAR_SIZE,
+    height: AVATAR_SIZE,
+    borderRadius: AVATAR_SIZE / 2,
+    borderWidth: 3,
+    borderColor: darkTheme.bg.primary,
+    zIndex: 10,
   },
   container: {
-    marginTop: 77,
+    paddingTop: AVATAR_SIZE / 2,
+    backgroundColor: darkTheme.bg.primary,
   },
   profile: {
-    padding: 16,
-    gap: 16,
+    padding: spacing.lg,
+    gap: spacing.md,
   },
   nickname: {
-    fontSize: 24,
-    fontWeight: "bold",
+    fontSize: typography.size.xl,
+    fontWeight: typography.weight.bold,
+    color: darkTheme.text.primary,
   },
   introduce: {
-    fontSize: 14,
+    fontSize: typography.size.sm,
+    color: darkTheme.text.secondary,
   },
   tabContainer: {
     flexDirection: "row",
+    backgroundColor: darkTheme.bg.primary,
   },
 });

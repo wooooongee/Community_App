@@ -1,4 +1,4 @@
-import { colors } from "@/constants";
+import { darkTheme, spacing, typography } from "@/constants/theme";
 import React, { type ReactNode } from "react";
 import { Pressable, StyleSheet, Text } from "react-native";
 
@@ -23,25 +23,25 @@ const Tab = ({ isActive, onPress, children }: TabProps) => {
 
 const styles = StyleSheet.create({
   container: {
-    height: 38,
+    height: 42,
     flex: 1,
-    paddingVertical: 8,
+    paddingVertical: spacing.sm,
     justifyContent: "center",
     alignItems: "center",
-    borderBottomColor: colors.WHITE,
-    borderBottomWidth: 2,
+    borderBottomColor: darkTheme.border.default,
+    borderBottomWidth: 1,
   },
   activeContainer: {
-    borderBottomColor: colors.BLACK,
+    borderBottomColor: darkTheme.accent.primary,
     borderBottomWidth: 2,
   },
   text: {
-    fontSize: 14,
-    color: colors.GRAY_500,
+    fontSize: typography.size.sm,
+    color: darkTheme.text.tertiary,
   },
   activeText: {
-    color: colors.BLACK,
-    fontWeight: "700", 
+    color: darkTheme.text.primary,
+    fontWeight: typography.weight.bold,
   },
 });
 

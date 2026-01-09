@@ -1,4 +1,4 @@
-import { colors } from "@/constants";
+import { darkTheme } from "@/constants";
 import useGetInfiniteLikedPosts from "@/hooks/queries/useGetInfiniteLikedPost";
 import { useScrollToTop } from "@react-navigation/native";
 import React, { useRef, useState } from "react";
@@ -49,7 +49,7 @@ function LikedFeedList() {
 const styles = StyleSheet.create({
   contentContainer: {
     paddingVertical: 12,
-    backgroundColor: colors.GRAY_200,
+    backgroundColor: darkTheme.border.light,
     gap: 12,
   },
 });

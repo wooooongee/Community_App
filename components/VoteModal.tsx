@@ -1,6 +1,6 @@
-import { colors } from "@/constants";
+import { darkTheme, spacing, typography } from "@/constants/theme";
 import type { VoteOption } from "@/types";
-import { Feather } from "@expo/vector-icons";
+import { Ionicons } from "@expo/vector-icons";
 import React from "react";
 import { useFieldArray, useFormContext, useWatch } from "react-hook-form";
 import {
@@ -18,7 +18,7 @@ import { useTranslation } from "react-i18next";
 
 const VoteModal = () => {
   const { control, setValue } = useFormContext();
-  const { t } = useTranslation(); 
+  const { t } = useTranslation();
   const [voteOptions, isVoteOpen] = useWatch({
     control,
     name: ["voteOptions", "isVoteOpen"],
@@ -38,7 +38,7 @@ const VoteModal = () => {
 
   const handleSubmitVote = () => {
     if (voteOptions.length < 2) {
-      Alert.alert(t("Add at least 2 vote options"), ""); 
+      Alert.alert(t("Add at least 2 vote options"), "");
       return;
     }
 
@@ -54,15 +54,15 @@ const VoteModal = () => {
             onPress={() => setValue("isVoteOpen", false)}
             style={styles.headerLeft}
           >
-            <Feather name="arrow-left" size={28} color={colors.BLACK} />
+            <Ionicons name="chevron-back" size={24} color={darkTheme.text.primary} />
           </Pressable>
           <Text style={styles.headerTitle}>{t("Vote")}</Text>
           <Text style={styles.headerRight} onPress={handleSubmitVote}>
-            {t("Attach")} 
+            {t("Attach")}
           </Text>
         </View>
         <KeyboardAwareScrollView
-          contentContainerStyle={{ gap: 12, padding: 16 }}
+          contentContainerStyle={{ gap: spacing.md, padding: spacing.lg }}
         >
           {fields.map((field, index) => {
             return (
@@ -85,7 +85,7 @@ const VoteModal = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: colors.WHITE,
+    backgroundColor: darkTheme.bg.primary,
   },
   header: {
     flexDirection: "row",
@@ -93,25 +93,25 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   headerLeft: {
-    paddingVertical: 10,
-    paddingHorizontal: 15,
+    paddingVertical: spacing.md,
+    paddingHorizontal: spacing.lg,
   },
   headerTitle: {
-    fontSize: 18,
-    fontWeight: "600",
-    color: colors.BLACK,
+    fontSize: typography.size.md,
+    fontWeight: typography.weight.semibold,
+    color: darkTheme.text.primary,
   },
   headerRight: {
-    fontSize: 14,
-    fontWeight: "bold",
-    color: colors.ORANGE_600,
-    paddingVertical: 10,
-    paddingHorizontal: 15,
+    fontSize: typography.size.sm,
+    fontWeight: typography.weight.bold,
+    color: darkTheme.accent.primary,
+    paddingVertical: spacing.md,
+    paddingHorizontal: spacing.lg,
   },
   addVoteText: {
-    fontSize: 14,
-    fontWeight: "bold",
-    color: colors.GRAY_500,
+    fontSize: typography.size.sm,
+    fontWeight: typography.weight.bold,
+    color: darkTheme.text.tertiary,
     textAlign: "center",
   },
 });

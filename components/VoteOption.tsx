@@ -1,4 +1,4 @@
-import { colors } from "@/constants";
+import { darkTheme, radius, spacing, typography } from "@/constants/theme";
 import type { PostVoteOption } from "@/types";
 import React from "react";
 import { Pressable, StyleSheet, Text, View } from "react-native";
@@ -46,34 +46,36 @@ function VoteOption({
 
 const styles = StyleSheet.create({
   container: {
-    height: 44,
-    borderRadius: 8,
-    backgroundColor: colors.WHITE,
+    height: 48,
+    borderRadius: radius.md,
+    backgroundColor: darkTheme.bg.secondary,
     borderWidth: 1,
-    borderColor: colors.GRAY_300,
+    borderColor: darkTheme.border.default,
     flexDirection: "row",
     justifyContent: "space-between",
     overflow: "hidden",
     alignItems: "center",
   },
   selectedContainer: {
-    height: 44,
-    borderRadius: 8,
-    backgroundColor: colors.WHITE,
-    borderWidth: 1,
-    borderColor: colors.ORANGE_600,
+    height: 48,
+    borderRadius: radius.md,
+    backgroundColor: darkTheme.bg.secondary,
+    borderWidth: 2,
+    borderColor: darkTheme.accent.primary,
     flexDirection: "row",
     justifyContent: "space-between",
     overflow: "hidden",
     alignItems: "center",
   },
   content: {
-    marginLeft: 10,
+    marginLeft: spacing.md,
+    color: darkTheme.text.primary,
+    fontSize: typography.size.sm,
   },
   votedContainer: {
-    height: 44,
-    borderRadius: 8,
-    backgroundColor: colors.ORANGE_200,
+    height: 48,
+    borderRadius: radius.md,
+    backgroundColor: "rgba(102, 126, 234, 0.3)",
     flexDirection: "row",
     justifyContent: "space-between",
     overflow: "hidden",
@@ -83,15 +85,17 @@ const styles = StyleSheet.create({
     position: "absolute",
     left: 0,
     right: 0,
-    height: 44,
-    backgroundColor: colors.ORANGE_300,
+    height: 48,
+    backgroundColor: "rgba(102, 126, 234, 0.5)",
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
   },
   percentText: {
-    marginRight: 10,
-    fontWeight: "500",
+    marginRight: spacing.md,
+    fontWeight: typography.weight.medium,
+    color: darkTheme.text.primary,
+    fontSize: typography.size.sm,
   },
 });
 

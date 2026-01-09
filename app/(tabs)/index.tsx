@@ -1,80 +1,147 @@
 import FeedList from "@/components/FeedList";
 import SearchInput from "@/components/SearchInput";
-import { colors } from "@/constants";
+import { darkTheme, spacing, radius, glow } from "@/constants/theme";
 import useAuth from "@/hooks/queries/useAuth";
 import { Ionicons } from "@expo/vector-icons";
+import { LinearGradient } from "expo-linear-gradient";
 import { router } from "expo-router";
 import { useTranslation } from "react-i18next";
+import * as Haptics from "expo-haptics";
 import {
-  Image,
-  Platform,
   Pressable,
-  SafeAreaView,
-  StatusBar,
   StyleSheet,
   View,
 } from "react-native";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
+import Animated, {
+  useSharedValue,
+  useAnimatedStyle,
+  withSpring,
+} from "react-native-reanimated";
+
+const AnimatedPressable = Animated.createAnimatedComponent(Pressable);
 
 export default function HomeScreen() {
   const { auth } = useAuth();
-  const { t } = useTranslation(); 
+  const { t } = useTranslation();
+  const insets = useSafeAreaInsets();
+
+  // FAB animation
+  const fabScale = useSharedValue(1);
+
+  const handleFabPressIn = () => {
+    fabScale.value = withSpring(0.9, { damping: 15, stiffness: 200 });
+    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
+  };
+
+  const handleFabPressOut = () => {
+    fabScale.value = withSpring(1, { damping: 15, stiffness: 200 });
+  };
+
+  const fabAnimatedStyle = useAnimatedStyle(() => ({
+    transform: [{ scale: fabScale.value }],
+  }));
 
   return (
-    <SafeAreaView style={styles.container}>
-      <View style={styles.inputContainer}>
-        <Image
-          source={require("@/assets/images/logo.png")}
-          style={styles.logo}
+    <View style={styles.container}>
+      {/* Header with gradient accent */}
+      <View style={[styles.header, { paddingTop: insets.top + spacing.sm }]}>
+        <LinearGradient
+          colors={['rgba(102, 126, 234, 0.15)', 'transparent']}
+          style={styles.headerGradient}
         />
-        <SearchInput
-          readOnly
-          placeholder={t("Search post title")} 
-          onPress={() => router.push("/post/search")}
-        />
+        <View style={styles.headerContent}>
+          {/* Logo / App name */}
+          <View style={styles.logoContainer}>
+            <LinearGradient
+              colors={darkTheme.gradient.primary as any}
+              start={{ x: 0, y: 0 }}
+              end={{ x: 1, y: 1 }}
+              style={styles.logoGradient}
+            >
+              <Ionicons name="chatbubbles" size={20} color={darkTheme.text.primary} />
+            </LinearGradient>
+          </View>
+
+          {/* Search */}
+          <SearchInput
+            readOnly
+            placeholder={t("Search post title")}
+            onPress={() => {
+              Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+              router.push("/post/search");
+            }}
+          />
+        </View>
       </View>
+
+      {/* Feed */}
       <FeedList />
+
+      {/* FAB with gradient */}
       {auth.id && (
-        <Pressable
-          style={styles.writeButton}
+        <AnimatedPressable
+          style={[styles.fab, { bottom: insets.bottom + spacing.lg }, fabAnimatedStyle]}
+          onPressIn={handleFabPressIn}
+          onPressOut={handleFabPressOut}
           onPress={() => router.push("/post/write")}
         >
-          <Ionicons name="pencil" size={32} color={colors.WHITE} />
-        </Pressable>
+          <LinearGradient
+            colors={darkTheme.gradient.primary as any}
+            start={{ x: 0, y: 0 }}
+            end={{ x: 1, y: 1 }}
+            style={styles.fabGradient}
+          >
+            <Ionicons name="add" size={28} color={darkTheme.text.primary} />
+          </LinearGradient>
+        </AnimatedPressable>
       )}
-    </SafeAreaView>
+    </View>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: colors.WHITE,
+    backgroundColor: darkTheme.bg.primary,
   },
-  inputContainer: {
-    marginBottom: 8,
-    paddingHorizontal: 16,
-    gap: 8,
-    backgroundColor: colors.WHITE,
-    flexDirection: "row",
-    paddingTop: Platform.OS === "android" ? StatusBar.currentHeight : 0,
+  header: {
+    paddingBottom: spacing.md,
+    backgroundColor: darkTheme.bg.primary,
   },
-  logo: {
+  headerGradient: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+  },
+  headerContent: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingHorizontal: spacing.lg,
+    gap: spacing.md,
+  },
+  logoContainer: {
+    ...glow.accent,
+  },
+  logoGradient: {
     width: 44,
     height: 44,
+    borderRadius: radius.md,
+    justifyContent: 'center',
+    alignItems: 'center',
   },
-  writeButton: {
-    position: "absolute",
-    bottom: 16,
-    right: 16,
-    backgroundColor: colors.ORANGE_600,
-    width: 64,
-    height: 64,
-    borderRadius: 32,
-    alignItems: "center",
-    justifyContent: "center",
-    shadowColor: colors.BLACK,
-    shadowOffset: { width: 0, height: 2 },
-    shadowRadius: 3,
-    shadowOpacity: 0.5,
+  fab: {
+    position: 'absolute',
+    right: spacing.lg,
+    ...glow.accent,
+  },
+  fabGradient: {
+    width: 56,
+    height: 56,
+    borderRadius: radius.full,
+    justifyContent: 'center',
+    alignItems: 'center',
   },
 });

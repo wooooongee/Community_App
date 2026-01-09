@@ -1,4 +1,4 @@
-import { colors } from "@/constants";
+import { darkTheme } from "@/constants/theme";
 import { Stack } from "expo-router";
 
 export default function MyLayout() {
@@ -7,7 +7,7 @@ export default function MyLayout() {
       screenOptions={{
         headerShown: false,
         contentStyle: {
-          backgroundColor: colors.WHITE,
+          backgroundColor: darkTheme.bg.primary,
         },
       }}
     >

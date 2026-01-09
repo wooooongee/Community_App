@@ -2,16 +2,17 @@ import { baseUrls } from "@/api/axios";
 import AvatarItem from "@/components/AvatarItem";
 import FixedBottomCTA from "@/components/FixedBottomCTA";
 import Tab from "@/components/Tab";
-import { colors } from "@/constants";
+import { darkTheme, spacing } from "@/constants/theme";
 import useAuth from "@/hooks/queries/useAuth";
 import useGetAvatarItems from "@/hooks/queries/useGetAvatarItems";
+import { LinearGradient } from "expo-linear-gradient";
 import { useNavigation } from "expo-router";
 import { useEffect, useRef, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { FlatList, Platform, StyleSheet, View } from "react-native";
 import PagerView from "react-native-pager-view";
 import { SvgUri } from "react-native-svg";
 import Toast from "react-native-toast-message";
-import { useTranslation } from "react-i18next";
 
 export default function AvatarScreen() {
   const navigation = useNavigation();
@@ -19,7 +20,7 @@ export default function AvatarScreen() {
   const { hats, faces, tops, bottoms, hands, skins } = useGetAvatarItems();
   const [currentTab, setCurrentTab] = useState(0);
   const { auth, profileMutation } = useAuth();
-  const { t } = useTranslation(); 
+  const { t } = useTranslation();
   const [avatarItem, setAvatarItem] = useState({
     hatId: auth?.hatId ?? "",
     faceId: auth?.faceId ?? "",
@@ -68,15 +69,21 @@ export default function AvatarScreen() {
   useEffect(() => {
     navigation.setOptions({
       headerStyle: {
-        backgroundColor: colors.ORANGE_200,
+        backgroundColor: "transparent",
       },
+      headerTransparent: true,
     });
   }, [navigation]);
 
   return (
     <>
       <View style={styles.container}>
-        <View style={styles.headerContainer}>
+        <LinearGradient
+          colors={darkTheme.gradient.primary as any}
+          start={{ x: 0, y: 0 }}
+          end={{ x: 1, y: 1 }}
+          style={styles.headerContainer}
+        >
           <View style={styles.avatarContainer}>
             {avatarItem.hatId && (
               <SvgUri
@@ -119,15 +126,15 @@ export default function AvatarScreen() {
               />
             )}
           </View>
-        </View>
+        </LinearGradient>
         <View style={styles.tabContainer}>
           {[
-            t("Hat"), 
-            t("Face"), 
-            t("Top"), 
-            t("Bottom"), 
-            t("Hand"), 
-            t("Skin")
+            t("Hat"),
+            t("Face"),
+            t("Top"),
+            t("Bottom"),
+            t("Hand"),
+            t("Skin"),
           ].map((tab, index) => (
             <Tab
               key={index}
@@ -177,23 +184,25 @@ export default function AvatarScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    backgroundColor: darkTheme.bg.primary,
   },
   headerContainer: {
     alignItems: "center",
     position: "relative",
-    backgroundColor: colors.ORANGE_200,
     width: "100%",
-    height: 115,
-    marginBottom: 115,
+    // height: 160,
+    paddingTop: 60,
+    paddingBottom :10,
+    
   },
   avatarContainer: {
     width: 229,
     height: 229,
-    borderRadius: 229,
+    borderRadius: 115,
     overflow: "hidden",
-    borderWidth: 1,
-    borderColor: colors.GRAY_200,
-    backgroundColor: colors.WHITE,
+    borderWidth: 3,
+    borderColor: darkTheme.bg.primary,
+    backgroundColor: darkTheme.bg.secondary,
   },
   avatar: {
     width: 229,
@@ -202,13 +211,15 @@ const styles = StyleSheet.create({
   },
   listContainer: {
     paddingBottom: 120,
-    marginTop: 10,
+    marginTop: spacing.sm,
     alignItems: "center",
   },
   tabContainer: {
     flexDirection: "row",
+    backgroundColor: darkTheme.bg.primary,
   },
   pagerView: {
     flex: 1,
+    backgroundColor: darkTheme.bg.primary,
   },
 });

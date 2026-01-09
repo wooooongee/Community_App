@@ -1,6 +1,6 @@
 import AuthRoute from "@/components/AuthRoute";
 import ListItem from "@/components/ListItem";
-import { colors } from "@/constants";
+import { darkTheme, spacing } from "@/constants/theme";
 import useAuth from "@/hooks/queries/useAuth";
 import { saveSecureStore } from "@/utils/secureStore";
 import { useActionSheet } from "@expo/react-native-action-sheet";
@@ -49,13 +49,13 @@ export default function SettingScreen() {
         <ListItem
           title={t("Language Setting")}
           onPress={handlePressLanguage}
-          icon={<Entypo name="language" size={16} color={colors.BLACK} />}
+          icon={<Entypo name="language" size={16} color={darkTheme.text.primary} />}
         />
         <View style={styles.space} />
         <ListItem
           title={t("Logout")}
           onPress={logout}
-          icon={<Octicons name="sign-out" size={16} color={colors.BLACK} />}
+          icon={<Octicons name="sign-out" size={16} color={darkTheme.text.primary} />}
         />
       </SafeAreaView>
     </AuthRoute>

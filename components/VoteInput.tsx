@@ -1,8 +1,8 @@
-import { colors } from "@/constants";
+import { darkTheme } from "@/constants/theme";
 import { Ionicons } from "@expo/vector-icons";
 import React from "react";
 import { Controller, useFormContext } from "react-hook-form";
-import { Pressable, StyleSheet } from "react-native";
+import { Pressable } from "react-native";
 import InputField from "./InputField";
 
 interface VoteInputProps {
@@ -31,7 +31,7 @@ function VoteInput({ index, onRemove }: VoteInputProps) {
           error={error?.message}
           rightChild={
             <Pressable onPress={onRemove}>
-              <Ionicons name="close" size={20} color={colors.BLACK} />
+              <Ionicons name="close" size={20} color={darkTheme.text.primary} />
             </Pressable>
           }
         />
@@ -39,7 +39,5 @@ function VoteInput({ index, onRemove }: VoteInputProps) {
     />
   );
 }
-
-const styles = StyleSheet.create({});
 
 export default VoteInput;

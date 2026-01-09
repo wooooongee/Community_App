@@ -32,6 +32,7 @@ interface CreatePostDto {
   imageUris: ImageUri[];
   voteTitle?: string;
   voteOptions?: VoteOption[];
+  deleteVote?: boolean;
 }
 
 interface CreateCommentDto {

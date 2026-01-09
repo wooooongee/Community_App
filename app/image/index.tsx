@@ -1,4 +1,4 @@
-import { colors } from "@/constants";
+import { darkTheme } from "@/constants";
 import { Feather } from "@expo/vector-icons";
 import { router, useLocalSearchParams } from "expo-router";
 import { Dimensions, Image, Pressable, StyleSheet, View } from "react-native";
@@ -30,7 +30,7 @@ const styles = StyleSheet.create({
     position: "absolute",
     left: 15,
     zIndex: 1,
-    backgroundColor: colors.BLACK,
+    backgroundColor: darkTheme.bg.primary,
     width: 40,
     height: 40,
     borderRadius: 40,

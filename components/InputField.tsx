@@ -1,5 +1,5 @@
-import { colors } from "@/constants";
-import React, { ForwardedRef, forwardRef, ReactNode } from "react";
+import { darkTheme, radius, typography, spacing } from "@/constants/theme";
+import React, { ForwardedRef, forwardRef, ReactNode, useState } from "react";
 import {
   StyleSheet,
   Text,
@@ -7,6 +7,13 @@ import {
   TextInputProps,
   View,
 } from "react-native";
+import Animated, {
+  useSharedValue,
+  useAnimatedStyle,
+  withTiming,
+  Easing,
+} from "react-native-reanimated";
+import * as Haptics from "expo-haptics";
 
 interface InputFieldProps extends TextInputProps {
   label?: string;
@@ -25,28 +32,67 @@ function InputField(
   }: InputFieldProps,
   ref?: ForwardedRef<TextInput>
 ) {
+  const [isFocused, setIsFocused] = useState(false);
+  const borderOpacity = useSharedValue(0.08);
+  const scale = useSharedValue(1);
+
+  const handleFocus = (e: any) => {
+    setIsFocused(true);
+    borderOpacity.value = withTiming(0.25, {
+      duration: 150,
+      easing: Easing.out(Easing.cubic),
+    });
+    scale.value = withTiming(1.01, {
+      duration: 150,
+      easing: Easing.out(Easing.cubic),
+    });
+    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+    props.onFocus?.(e);
+  };
+
+  const handleBlur = (e: any) => {
+    setIsFocused(false);
+    borderOpacity.value = withTiming(0.08, {
+      duration: 150,
+      easing: Easing.out(Easing.cubic),
+    });
+    scale.value = withTiming(1, {
+      duration: 150,
+      easing: Easing.out(Easing.cubic),
+    });
+    props.onBlur?.(e);
+  };
+
+  const animatedStyle = useAnimatedStyle(() => ({
+    transform: [{ scale: scale.value }],
+    borderColor: `rgba(102, 126, 234, ${borderOpacity.value})`,
+  }));
+
   return (
     <View>
       {label && <Text style={styles.label}>{label}</Text>}
-      <View
+      <Animated.View
         style={[
           styles.container,
-          styles[variant],
           props.multiline && styles.multiLine,
           Boolean(error) && styles.inputError,
+          isFocused && styles.focused,
+          animatedStyle,
         ]}
       >
         <TextInput
           ref={ref}
-          placeholderTextColor={colors.GRAY_500}
-          style={[styles.input, styles[`${variant}Text`]]}
+          placeholderTextColor={darkTheme.text.muted}
+          style={[styles.input, props.multiline && styles.multiLineInput]}
           autoCapitalize="none"
           spellCheck={false}
           autoCorrect={false}
+          onFocus={handleFocus}
+          onBlur={handleBlur}
           {...props}
         />
         {rightChild}
-      </View>
+      </Animated.View>
       {Boolean(error) && <Text style={styles.error}>{error}</Text>}
     </View>
   );
@@ -54,54 +100,49 @@ function InputField(
 
 const styles = StyleSheet.create({
   container: {
-    height: 44,
-    borderRadius: 8,
-    paddingHorizontal: 10,
+    minHeight: 48,
+    borderRadius: radius.md,
+    paddingHorizontal: spacing.lg,
     justifyContent: "center",
     alignItems: "center",
     flexDirection: "row",
+    backgroundColor: 'rgba(255, 255, 255, 0.05)',
+    borderWidth: 1,
+    borderColor: 'rgba(255, 255, 255, 0.08)',
   },
   label: {
-    fontSize: 12,
-    color: colors.GRAY_700,
-    marginBottom: 5,
+    fontSize: typography.size.sm,
+    color: darkTheme.text.secondary,
+    marginBottom: spacing.sm,
+    fontWeight: typography.weight.medium,
   },
-  filled: {
-    backgroundColor: colors.GRAY_100,
+  focused: {
+    backgroundColor: 'rgba(255, 255, 255, 0.08)',
   },
-  standard: {
-    borderWidth: 1,
-    borderColor: colors.GRAY_200,
-  },
-  outlined: {
-    borderWidth: 1,
-    borderColor: colors.ORANGE_600,
-  },
-  standardText: {
-    color: colors.BLACK,
-  },
-  outlinedText: {
-    color: colors.ORANGE_600,
-    fontWeight: "bold",
-  },
-  filledText: { color: colors.BLACK },
   input: {
-    fontSize: 16,
+    fontSize: typography.size.md,
     padding: 0,
     flex: 1,
+    color: darkTheme.text.primary,
+  },
+  multiLineInput: {
+    textAlignVertical: 'top',
+    paddingTop: 0,
   },
   error: {
-    fontSize: 12,
-    marginTop: 5,
-    color: colors.RED_500,
+    fontSize: typography.size.sm,
+    marginTop: spacing.sm,
+    color: darkTheme.accent.error,
+    fontWeight: typography.weight.medium,
   },
   inputError: {
-    backgroundColor: colors.RED_100,
+    backgroundColor: 'rgba(239, 68, 68, 0.1)',
+    borderColor: darkTheme.accent.error,
   },
   multiLine: {
     alignItems: "flex-start",
-    paddingVertical: 10,
-    height: 200,
+    paddingVertical: spacing.md,
+    minHeight: 160,
   },
 });
 

@@ -1,5 +1,5 @@
 import { baseUrls } from "@/api/axios";
-import { colors } from "@/constants";
+import { darkTheme, spacing, radius, typography } from "@/constants/theme";
 import dayjs from "dayjs";
 import "dayjs/locale/ko";
 import relativeTime from "dayjs/plugin/relativeTime";
@@ -13,6 +13,7 @@ import {
   Text,
   View,
 } from "react-native";
+
 dayjs.extend(relativeTime);
 
 interface ProfileProps {
@@ -31,24 +32,29 @@ function Profile({
   option,
 }: ProfileProps) {
   const { i18n } = useTranslation();
+
   return (
     <View style={styles.container}>
       <Pressable style={styles.profileContainer} onPress={onPress}>
-        <Image
-          source={
-            imageUri
-              ? {
-                  uri: `${
-                    Platform.OS === "ios" ? baseUrls.ios : baseUrls.android
-                  }/${imageUri}`,
-                }
-              : require("@/assets/images/default-avatar.png")
-          }
-          style={styles.avatar}
-        />
-        <View style={{ gap: 4 }}>
+        <View style={styles.avatarContainer}>
+          <Image
+            source={
+              imageUri
+                ? {
+                    uri: `${
+                      Platform.OS === "ios" ? baseUrls.ios : baseUrls.android
+                    }/${imageUri}`,
+                  }
+                : require("@/assets/images/default-avatar.png")
+            }
+            style={styles.avatar}
+          />
+        </View>
+        <View style={styles.textContainer}>
           <Text style={styles.nickname}>{nickname}</Text>
-          <Text style={styles.createdAt}>{dayjs(createdAt).locale(i18n.language).fromNow()}</Text>
+          <Text style={styles.createdAt}>
+            {dayjs(createdAt).locale(i18n.language).fromNow()}
+          </Text>
         </View>
       </Pressable>
       {option}
@@ -58,7 +64,6 @@ function Profile({
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "space-between",
@@ -66,23 +71,30 @@ const styles = StyleSheet.create({
   profileContainer: {
     flexDirection: "row",
     alignItems: "center",
-    gap: 8,
+    gap: spacing.md,
+  },
+  avatarContainer: {
+    borderRadius: radius.full,
+    padding: 2,
+    borderWidth: 1,
+    borderColor: 'rgba(255, 255, 255, 0.15)',
   },
   avatar: {
-    width: 50,
-    height: 50,
-    borderRadius: 50,
-    borderWidth: StyleSheet.hairlineWidth,
-    borderColor: colors.GRAY_300,
+    width: 44,
+    height: 44,
+    borderRadius: radius.full,
+  },
+  textContainer: {
+    gap: spacing.xs,
   },
   nickname: {
-    fontSize: 15,
-    fontWeight: "bold",
-    color: colors.BLACK,
+    fontSize: typography.size.base,
+    fontWeight: typography.weight.semibold,
+    color: darkTheme.text.primary,
   },
   createdAt: {
-    fontSize: 14,
-    color: colors.GRAY_500,
+    fontSize: typography.size.sm,
+    color: darkTheme.text.tertiary,
   },
 });
 

@@ -1,4 +1,4 @@
-import { colors } from "@/constants";
+import { darkTheme, spacing, typography } from "@/constants/theme";
 import React, { type ReactNode } from "react";
 import {
   Pressable,
@@ -34,16 +34,16 @@ const styles = StyleSheet.create({
   container: {
     flexDirection: "row",
     alignItems: "center",
-    gap: 10,
-    padding: 15,
+    gap: spacing.sm,
+    padding: spacing.md,
     minHeight: 56,
-    backgroundColor: colors.WHITE,
-    borderColor: colors.GRAY_200,
+    backgroundColor: darkTheme.bg.secondary,
+    borderColor: darkTheme.border.default,
     borderBottomWidth: StyleSheet.hairlineWidth,
     borderTopWidth: StyleSheet.hairlineWidth,
   },
   pressedContainer: {
-    backgroundColor: colors.GRAY_200,
+    backgroundColor: darkTheme.bg.tertiary,
   },
   titleContainer: {
     flex: 1,
@@ -51,9 +51,9 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
   },
   titleText: {
-    fontSize: 16,
-    fontWeight: "500",
-    color: colors.BLACK,
+    fontSize: typography.size.md,
+    fontWeight: typography.weight.medium,
+    color: darkTheme.text.primary,
   },
 });
 
