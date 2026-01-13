@@ -1,5 +1,8 @@
-import { baseUrls } from "@/api/axios";
 import CustomButton from "@/components/CustomButton";
+import DiceBearAvatar, {
+  defaultAvatarConfig,
+  generateAvatarSeed,
+} from "@/components/DiceBearAvatar";
 import FixedBottomCTA from "@/components/FixedBottomCTA";
 import IntroduceInput from "@/components/IntroduceInput";
 import NicknameInput from "@/components/NicknameInput";
@@ -8,7 +11,7 @@ import useAuth from "@/hooks/queries/useAuth";
 import { router } from "expo-router";
 import { FormProvider, useForm } from "react-hook-form";
 import { useTranslation } from "react-i18next";
-import { Image, Platform, StyleSheet, View } from "react-native";
+import { StyleSheet, View } from "react-native";
 import Toast from "react-native-toast-message";
 
 type FormValues = {
@@ -40,18 +43,17 @@ export default function ProfileUpdateScreen() {
     <FormProvider {...profileForm}>
       <View style={styles.container}>
         <View style={styles.avatarContainer}>
-          <Image
-            source={
-              auth.imageUri
-                ? {
-                    uri: `${
-                      Platform.OS === "ios" ? baseUrls.ios : baseUrls.android
-                    }/${auth.imageUri}`,
-                  }
-                : require("@/assets/images/default-avatar.png")
-            }
-            style={styles.avatar}
-          />
+          <View style={styles.avatar}>
+            <DiceBearAvatar
+              config={
+                auth.avatarConfig ?? {
+                  ...defaultAvatarConfig,
+                  seed: generateAvatarSeed(auth.id || auth.nickname),
+                }
+              }
+              size={148}
+            />
+          </View>
           <CustomButton
             size="medium"
             variant="outlined"
@@ -90,6 +92,10 @@ const styles = StyleSheet.create({
     borderRadius: 77,
     borderWidth: 3,
     borderColor: darkTheme.border.default,
+    backgroundColor: darkTheme.bg.secondary,
+    overflow: "hidden",
+    justifyContent: "center",
+    alignItems: "center",
   },
   inputContainer: {
     gap: spacing.lg,

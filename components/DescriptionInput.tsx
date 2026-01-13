@@ -1,7 +1,7 @@
 import React from "react";
 import { Controller, useFormContext } from "react-hook-form";
-import InputField from "./InputField";
 import { useTranslation } from "react-i18next";
+import InputField from "./InputField";
 
 function DescriptionInput() {
   const { control, setFocus } = useFormContext();
@@ -14,16 +14,15 @@ function DescriptionInput() {
       rules={{
         validate: (data: string) => {
           if (data.length < 5) {
-            return t("Content must be at least 5 characters"); 
+            return t("Content must be at least 5 characters");
           }
         },
       }}
       render={({ field: { ref, onChange, value }, fieldState: { error } }) => (
         <InputField
           ref={ref}
-          autoFocus
           label={t("Content")}
-          placeholder={t("Please enter content")} 
+          placeholder={t("Please enter content")}
           returnKeyType="next"
           value={value}
           onChangeText={onChange}

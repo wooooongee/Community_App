@@ -1,17 +1,20 @@
-import { baseUrls } from "@/api/axios";
 import AuthRoute from "@/components/AuthRoute";
 import CustomButton from "@/components/CustomButton";
+import DiceBearAvatar, {
+  defaultAvatarConfig,
+  generateAvatarSeed,
+} from "@/components/DiceBearAvatar";
 import LikedFeedList from "@/components/LikedFeedList";
 import MyFeedList from "@/components/MyFeedList";
 import Tab from "@/components/Tab";
 import { darkTheme, spacing, typography } from "@/constants/theme";
 import useAuth from "@/hooks/queries/useAuth";
+import { LinearGradient } from "expo-linear-gradient";
 import { router } from "expo-router";
 import { useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { Image, Platform, StyleSheet, Text, View } from "react-native";
+import { StyleSheet, Text, View } from "react-native";
 import PagerView from "react-native-pager-view";
-import { LinearGradient } from "expo-linear-gradient";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 const HEADER_BASE_HEIGHT = 120;
@@ -49,18 +52,17 @@ export default function MyScreen() {
             onPress={() => router.push("/profile/update")}
           />
         </LinearGradient>
-        <Image
-          source={
-            auth.imageUri
-              ? {
-                  uri: `${
-                    Platform.OS === "ios" ? baseUrls.ios : baseUrls.android
-                  }/${auth.imageUri}`,
-                }
-              : require("@/assets/images/default-avatar.png")
-          }
-          style={[styles.avatar, { top: avatarTop }]}
-        />
+        <View style={[styles.avatar, { top: avatarTop }]}>
+          <DiceBearAvatar
+            config={
+              auth.avatarConfig ?? {
+                ...defaultAvatarConfig,
+                seed: generateAvatarSeed(auth.id || auth.nickname),
+              }
+            }
+            size={AVATAR_SIZE - 6}
+          />
+        </View>
       </View>
       <View style={styles.container}>
         <View style={styles.profile}>
@@ -107,7 +109,11 @@ const styles = StyleSheet.create({
     borderRadius: AVATAR_SIZE / 2,
     borderWidth: 3,
     borderColor: darkTheme.bg.primary,
+    backgroundColor: darkTheme.bg.secondary,
     zIndex: 10,
+    overflow: "hidden",
+    justifyContent: "center",
+    alignItems: "center",
   },
   container: {
     paddingTop: AVATAR_SIZE / 2,

@@ -81,6 +81,8 @@ function useUpdateProfile() {
     mutationFn: editProfile,
     onSuccess: (newProfile) => {
       queryClient.setQueryData([queryKeys.AUTH, queryKeys.GET_ME], newProfile);
+      // 아바타 변경 시 게시물/댓글 캐시 무효화 (author.avatarConfig 갱신)
+      queryClient.invalidateQueries({ queryKey: [queryKeys.POST] });
     },
   });
 }
@@ -103,6 +105,8 @@ function useAuth() {
       nickname: data?.nickname || "",
       imageUri: data?.imageUri || "",
       introduce: data?.introduce || "",
+      avatarConfig: data?.avatarConfig,
+      // Legacy fields (deprecated)
       hatId: data?.hatId || "",
       handId: data?.handId || "",
       skinId: data?.skinId || "",

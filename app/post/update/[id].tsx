@@ -11,7 +11,7 @@ import { router, useLocalSearchParams } from "expo-router";
 import { useEffect } from "react";
 import { FormProvider, useForm } from "react-hook-form";
 import { useTranslation } from "react-i18next";
-import { StyleSheet, View, Text, TouchableOpacity } from "react-native";
+import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
@@ -74,11 +74,17 @@ export default function PostUpdateScreen() {
         {/* Custom Header */}
         <View style={[styles.header, { paddingTop: insets.top + spacing.sm }]}>
           <TouchableOpacity
-            onPress={() => router.canGoBack() ? router.back() : router.replace("/")}
+            onPress={() =>
+              router.canGoBack() ? router.back() : router.replace("/")
+            }
             style={styles.backButton}
             activeOpacity={0.7}
           >
-            <Ionicons name="chevron-back" size={24} color={darkTheme.text.primary} />
+            <Ionicons
+              name="chevron-back"
+              size={24}
+              color={darkTheme.text.primary}
+            />
           </TouchableOpacity>
           <Text style={styles.title}>{t("Edit Post")}</Text>
           <CustomButton

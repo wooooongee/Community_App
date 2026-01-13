@@ -1,25 +1,25 @@
-import { darkTheme, typography, spacing, radius } from "@/constants/theme";
+import { darkTheme, radius, spacing, typography } from "@/constants/theme";
 import useAuth from "@/hooks/queries/useAuth";
 import useDeletePost from "@/hooks/queries/useDeletePost";
 import useLikePost from "@/hooks/queries/useLikePost";
 import type { Post } from "@/types";
 import { useActionSheet } from "@expo/react-native-action-sheet";
 import { Ionicons, MaterialCommunityIcons, Octicons } from "@expo/vector-icons";
+import * as Haptics from "expo-haptics";
 import { LinearGradient } from "expo-linear-gradient";
 import { router } from "expo-router";
 import React from "react";
+import { useTranslation } from "react-i18next";
 import { Pressable, Share, StyleSheet, Text, View } from "react-native";
 import Animated, {
-  useSharedValue,
-  useAnimatedStyle,
-  withSpring,
   FadeIn,
+  useAnimatedStyle,
+  useSharedValue,
+  withSpring,
 } from "react-native-reanimated";
-import * as Haptics from "expo-haptics";
 import ImagePreviewList from "./ImagePreviewList";
 import Profile from "./Profile";
 import Vote from "./Vote";
-import { useTranslation } from "react-i18next";
 
 const AnimatedPressable = Animated.createAnimatedComponent(Pressable);
 
@@ -32,8 +32,12 @@ function FeedItem({ post, isDetail = false }: FeedItemProps) {
   const { auth } = useAuth();
   const { t } = useTranslation();
   const likeUsers = post.likes?.map((like) => Number(like.userId));
+  const isOwnPost = auth.id === post.author.id;
   const isLiked = likeUsers?.includes(Number(auth.id));
   const { showActionSheetWithOptions } = useActionSheet();
+
+  // DEBUG: API에서 avatarConfig 반환 확인
+  console.log(`[FeedItem] author: ${post.author.nickname}, avatarConfig:`, post.author.avatarConfig);
   const deletePost = useDeletePost();
   const likePost = useLikePost();
 
@@ -125,7 +129,11 @@ function FeedItem({ post, isDetail = false }: FeedItemProps) {
       <View style={styles.glassBackground}>
         {/* Subtle gradient accent on top border */}
         <LinearGradient
-          colors={['rgba(102, 126, 234, 0.3)', 'rgba(240, 147, 251, 0.3)', 'transparent']}
+          colors={[
+            "rgba(102, 126, 234, 0.3)",
+            "rgba(240, 147, 251, 0.3)",
+            "transparent",
+          ]}
           start={{ x: 0, y: 0 }}
           end={{ x: 1, y: 1 }}
           style={styles.topGradient}
@@ -133,7 +141,9 @@ function FeedItem({ post, isDetail = false }: FeedItemProps) {
 
         <View style={styles.contentContainer}>
           <Profile
-            imageUri={post.author.imageUri}
+            userId={post.author.id}
+            imageUri={isOwnPost ? auth.imageUri : post.author.imageUri}
+            avatarConfig={isOwnPost ? auth.avatarConfig : post.author.avatarConfig}
             nickname={post.author.nickname}
             createdAt={post.createdAt}
             onPress={() => {
@@ -156,7 +166,10 @@ function FeedItem({ post, isDetail = false }: FeedItemProps) {
           />
 
           <Text style={styles.title}>{post.title}</Text>
-          <Text numberOfLines={isDetail ? undefined : 3} style={styles.description}>
+          <Text
+            numberOfLines={isDetail ? undefined : 3}
+            style={styles.description}
+          >
             {post.description}
           </Text>
 
@@ -170,7 +183,11 @@ function FeedItem({ post, isDetail = false }: FeedItemProps) {
                 end={{ x: 1, y: 0 }}
                 style={styles.voteGradient}
               >
-                <MaterialCommunityIcons name="vote" size={18} color={darkTheme.text.primary} />
+                <MaterialCommunityIcons
+                  name="vote"
+                  size={18}
+                  color={darkTheme.text.primary}
+                />
                 <Text style={styles.voteText}>{t("Vote")}</Text>
               </LinearGradient>
               <Text style={styles.voteCountText}>
@@ -190,14 +207,13 @@ function FeedItem({ post, isDetail = false }: FeedItemProps) {
 
         {/* Action bar */}
         <View style={styles.menuContainer}>
-          <Pressable
-            style={styles.menu}
-            onPress={handlePressLike}
-          >
+          <Pressable style={styles.menu} onPress={handlePressLike}>
             <Octicons
               name={isLiked ? "heart-fill" : "heart"}
               size={18}
-              color={isLiked ? darkTheme.accent.secondary : darkTheme.text.secondary}
+              color={
+                isLiked ? darkTheme.accent.secondary : darkTheme.text.secondary
+              }
             />
             <Text style={[styles.menuText, isLiked && styles.likedText]}>
               {post.likes.length || ""}
@@ -214,12 +230,20 @@ function FeedItem({ post, isDetail = false }: FeedItemProps) {
           </Pressable>
 
           <Pressable style={styles.menu}>
-            <Ionicons name="eye-outline" size={18} color={darkTheme.text.secondary} />
+            <Ionicons
+              name="eye-outline"
+              size={18}
+              color={darkTheme.text.secondary}
+            />
             <Text style={styles.menuText}>{post.viewCount}</Text>
           </Pressable>
 
           <Pressable style={styles.menu} onPress={handlePressShare}>
-            <Ionicons name="share-outline" size={18} color={darkTheme.text.secondary} />
+            <Ionicons
+              name="share-outline"
+              size={18}
+              color={darkTheme.text.secondary}
+            />
           </Pressable>
         </View>
       </View>
@@ -237,10 +261,10 @@ const styles = StyleSheet.create({
     borderRadius: radius.xl,
     borderWidth: 1,
     borderColor: darkTheme.border.default,
-    overflow: 'hidden',
+    overflow: "hidden",
   },
   topGradient: {
-    position: 'absolute',
+    position: "absolute",
     top: 0,
     left: 0,
     right: 0,
@@ -296,8 +320,8 @@ const styles = StyleSheet.create({
     marginTop: spacing.sm,
   },
   voteGradient: {
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: "row",
+    alignItems: "center",
     gap: spacing.sm,
     paddingVertical: spacing.sm,
     paddingHorizontal: spacing.md,

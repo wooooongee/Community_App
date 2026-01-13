@@ -30,6 +30,7 @@ const CommentItem = ({
   const { t } = useTranslation();
   const { showActionSheetWithOptions } = useActionSheet();
   const deleteComment = useDeleteComment();
+  const isOwnComment = !comment.isDeleted && auth.id === comment.user.id;
 
   const getCommentBackground = () => {
     if (parentCommentId === comment.id) {
@@ -79,7 +80,9 @@ const CommentItem = ({
           />
         )}
         <Profile
-          imageUri={comment.isDeleted ? "" : comment.user.imageUri}
+          userId={comment.isDeleted ? undefined : comment.user.id}
+          imageUri={comment.isDeleted ? "" : (isOwnComment ? auth.imageUri : comment.user.imageUri)}
+          avatarConfig={comment.isDeleted ? undefined : (isOwnComment ? auth.avatarConfig : comment.user.avatarConfig)}
           nickname={comment.isDeleted ? t("(Deleted)") : comment.user.nickname}
           createdAt={comment.createdAt}
           onPress={() => {

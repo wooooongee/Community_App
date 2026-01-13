@@ -1,11 +1,11 @@
 import React from "react";
 import { Controller, useFormContext } from "react-hook-form";
+import { useTranslation } from "react-i18next";
 import InputField from "./InputField";
-import { useTranslation } from "react-i18next"; 
 
 function TitleInput() {
   const { control, setFocus } = useFormContext();
-  const { t } = useTranslation(); 
+  const { t } = useTranslation();
 
   return (
     <Controller
@@ -14,14 +14,15 @@ function TitleInput() {
       rules={{
         validate: (data: string) => {
           if (data.length <= 0) {
-            return t("Please enter a title"); 
+            return t("Please enter a title");
           }
         },
       }}
       render={({ field: { onChange, value }, fieldState: { error } }) => (
         <InputField
+          autoFocus
           label={t("Title")}
-          placeholder={t("Please enter a title")} 
+          placeholder={t("Please enter a title")}
           submitBehavior="submit"
           returnKeyType="next"
           value={value}

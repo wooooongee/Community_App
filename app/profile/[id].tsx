@@ -1,26 +1,38 @@
-import { baseUrls } from "@/api/axios";
 import AuthRoute from "@/components/AuthRoute";
+import DiceBearAvatar, {
+  defaultAvatarConfig,
+  generateAvatarSeed,
+} from "@/components/DiceBearAvatar";
 import Tab from "@/components/Tab";
 import UserFeedList from "@/components/UserFeedList";
-import { darkTheme } from "@/constants";
+import { darkTheme, spacing, typography } from "@/constants";
 import useAuth from "@/hooks/queries/useAuth";
 import useGetUserProfile from "@/hooks/queries/useGetUserProfile";
+import { LinearGradient } from "expo-linear-gradient";
 import { Redirect, useLocalSearchParams, useNavigation } from "expo-router";
 import { useEffect } from "react";
-import { Image, Platform, StyleSheet, Text, View } from "react-native";
+import { useTranslation } from "react-i18next";
+import { StyleSheet, Text, View } from "react-native";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
+
+const HEADER_BASE_HEIGHT = 120;
+const AVATAR_SIZE = 120;
 
 export default function ProfileScreen() {
   const navigation = useNavigation();
   const { id: userId } = useLocalSearchParams();
   const { auth } = useAuth();
   const { data: profile } = useGetUserProfile(Number(userId));
-  const { nickname, introduce, imageUri } = profile || {};
+  const { nickname, introduce, avatarConfig } = profile || {};
+  const { t } = useTranslation();
+  const insets = useSafeAreaInsets();
+
+  const headerHeight = HEADER_BASE_HEIGHT + insets.top;
+  const avatarTop = headerHeight - AVATAR_SIZE / 2;
 
   useEffect(() => {
     navigation.setOptions({
-      headerStyle: {
-        backgroundColor: "rgba(102, 126, 234, 0.3)",
-      },
+      headerShown: false,
     });
   }, [navigation]);
 
@@ -30,19 +42,24 @@ export default function ProfileScreen() {
 
   return (
     <AuthRoute>
-      <View style={styles.header}>
-        <Image
-          source={
-            imageUri
-              ? {
-                  uri: `${
-                    Platform.OS === "ios" ? baseUrls.ios : baseUrls.android
-                  }/${imageUri}`,
-                }
-              : require("@/assets/images/default-avatar.png")
-          }
-          style={styles.avatar}
+      <View style={styles.headerWrapper}>
+        <LinearGradient
+          colors={darkTheme.gradient.primary as [string, string, ...string[]]}
+          start={{ x: 0, y: 0 }}
+          end={{ x: 1, y: 1 }}
+          style={[styles.header, { height: headerHeight }]}
         />
+        <View style={[styles.avatar, { top: avatarTop }]}>
+          <DiceBearAvatar
+            config={
+              avatarConfig ?? {
+                ...defaultAvatarConfig,
+                seed: generateAvatarSeed(Number(userId)),
+              }
+            }
+            size={AVATAR_SIZE - 6}
+          />
+        </View>
       </View>
       <View style={styles.container}>
         <View style={styles.profile}>
@@ -51,7 +68,7 @@ export default function ProfileScreen() {
         </View>
       </View>
       <View style={styles.tabContainer}>
-        <Tab isActive>게시물</Tab>
+        <Tab isActive>{t("Posts")}</Tab>
       </View>
       <UserFeedList userId={Number(userId)} />
     </AuthRoute>
@@ -59,38 +76,47 @@ export default function ProfileScreen() {
 }
 
 const styles = StyleSheet.create({
+  headerWrapper: {
+    position: "relative",
+    backgroundColor: darkTheme.bg.primary,
+  },
   header: {
     position: "relative",
-    backgroundColor: "rgba(102, 126, 234, 0.3)",
     width: "100%",
-    height: 77,
   },
   avatar: {
     position: "absolute",
-    left: 16,
-    width: 154,
-    height: 154,
-    borderRadius: 154,
-    borderWidth: StyleSheet.hairlineWidth,
-    borderColor: darkTheme.text.tertiary,
+    left: spacing.lg,
+    width: AVATAR_SIZE,
+    height: AVATAR_SIZE,
+    borderRadius: AVATAR_SIZE / 2,
+    borderWidth: 3,
+    borderColor: darkTheme.bg.primary,
+    backgroundColor: darkTheme.bg.secondary,
+    zIndex: 10,
+    overflow: "hidden",
+    justifyContent: "center",
+    alignItems: "center",
   },
   container: {
-    marginTop: 77,
+    paddingTop: AVATAR_SIZE / 2,
+    backgroundColor: darkTheme.bg.primary,
   },
   profile: {
-    padding: 16,
-    gap: 16,
+    padding: spacing.lg,
+    gap: spacing.md,
   },
   nickname: {
-    fontSize: 24,
-    fontWeight: "bold",
+    fontSize: typography.size.xl,
+    fontWeight: typography.weight.bold,
     color: darkTheme.text.primary,
   },
   introduce: {
-    fontSize: 14,
-    color: darkTheme.text.primary,
+    fontSize: typography.size.sm,
+    color: darkTheme.text.secondary,
   },
   tabContainer: {
     flexDirection: "row",
+    backgroundColor: darkTheme.bg.primary,
   },
 });

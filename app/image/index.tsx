@@ -9,8 +9,11 @@ export default function ImageZoomScreen() {
   const { uri } = useLocalSearchParams<{ uri: string }>();
 
   return (
-    <View style={[styles.container, { marginTop: inset.top + 10 }]}>
-      <Pressable style={styles.backButton} onPress={() => router.back()}>
+    <View style={[styles.container, { paddingTop: inset.top }]}>
+      <Pressable
+        style={[styles.backButton, { top: inset.top + 10 }]}
+        onPress={() => router.back()}
+      >
         <Feather name="arrow-left" size={28} color={"white"} />
       </Pressable>
       <Image
@@ -25,6 +28,7 @@ export default function ImageZoomScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    backgroundColor: darkTheme.bg.primary,
   },
   backButton: {
     position: "absolute",

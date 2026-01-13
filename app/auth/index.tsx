@@ -32,8 +32,8 @@ const styles = StyleSheet.create({
     backgroundColor: darkTheme.bg.primary,
   },
   logo: {
-    width: 112,
-    height: 112,
+    width: 168,
+    height: 168,
   },
   imageContainer: {
     justifyContent: "center",
@@ -47,7 +47,7 @@ const styles = StyleSheet.create({
     color: darkTheme.text.secondary,
   },
   buttonContainer: {
-    paddingHorizontal: spacing['2xl'],
+    paddingHorizontal: spacing["2xl"],
     flex: 1,
   },
 });

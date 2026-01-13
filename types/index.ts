@@ -2,18 +2,43 @@ interface User {
   id: number;
   nickname: string;
   imageUri?: string;
+  avatarConfig?: LoreleiAvatarConfig;
+}
+
+// DiceBear Lorelei 아바타 설정
+interface LoreleiAvatarConfig {
+  seed: string;
+  flip?: boolean;
+  backgroundColor?: string[];
+  // Lorelei 스타일 옵션
+  beard?: string[];
+  beardProbability?: number;
+  earrings?: string[];
+  earringsProbability?: number;
+  eyebrows?: string[];
+  eyes?: string[];
+  freckles?: string[];
+  frecklesProbability?: number;
+  glasses?: string[];
+  glassesProbability?: number;
+  hair?: string[];
+  head?: string[];
+  mouth?: string[];
+  nose?: string[];
 }
 
 interface Profile extends User {
   email: string;
   introduce?: string;
-  hatId: string;
-  handId: string;
-  skinId: string;
-  topId: string;
-  faceId: string;
-  bottomId: string;
-  background: string;
+  avatarConfig: LoreleiAvatarConfig;
+  // Legacy fields (deprecated)
+  hatId?: string;
+  handId?: string;
+  skinId?: string;
+  topId?: string;
+  faceId?: string;
+  bottomId?: string;
+  background?: string;
 }
 
 interface ImageUri {
@@ -88,6 +113,7 @@ export type {
   CreatePostDto,
   CreateVoteDto,
   ImageUri,
+  LoreleiAvatarConfig,
   Post,
   PostVote,
   PostVoteOption,

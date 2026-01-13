@@ -31,7 +31,11 @@ export default function ProfileLayout() {
           headerTitle: "",
           headerLeft: () => (
             <Pressable onPress={() => router.back()}>
-              <Ionicons name="chevron-back" size={28} color={darkTheme.text.primary} />
+              <Ionicons
+                name="chevron-back"
+                size={28}
+                color={darkTheme.text.primary}
+              />
             </Pressable>
           ),
         }}
@@ -45,12 +49,16 @@ export default function ProfileLayout() {
           headerTitle: t("Edit Profile"),
           headerLeft: () => (
             <Pressable onPress={() => router.back()}>
-              <Ionicons name="chevron-back" size={28} color={darkTheme.text.primary} />
+              <Ionicons
+                name="chevron-back"
+                size={28}
+                color={darkTheme.text.primary}
+              />
             </Pressable>
           ),
         }}
       />
-      <Stack.Screen
+      {/* <Stack.Screen
         name="avatar"
         options={{
           headerShown: true,
@@ -59,11 +67,15 @@ export default function ProfileLayout() {
           headerTitle: "",
           headerLeft: () => (
             <Pressable onPress={() => router.back()}>
-              <Ionicons name="chevron-back" size={28} color={darkTheme.text.primary} />
+              <Ionicons
+                name="chevron-back"
+                size={28}
+                color={darkTheme.text.primary}
+              />
             </Pressable>
           ),
         }}
-      />
+      /> */}
     </Stack>
   );
 }

@@ -1,180 +1,89 @@
-import { baseUrls } from "@/api/axios";
-import AvatarItem from "@/components/AvatarItem";
+import AvatarEditor from "@/components/AvatarEditor";
+import {
+  defaultAvatarConfig,
+  generateAvatarSeed,
+} from "@/components/DiceBearAvatar";
 import FixedBottomCTA from "@/components/FixedBottomCTA";
-import Tab from "@/components/Tab";
-import { darkTheme, spacing } from "@/constants/theme";
+import { darkTheme, spacing, typography } from "@/constants/theme";
 import useAuth from "@/hooks/queries/useAuth";
-import useGetAvatarItems from "@/hooks/queries/useGetAvatarItems";
+import type { LoreleiAvatarConfig } from "@/types";
+import { Ionicons } from "@expo/vector-icons";
 import { LinearGradient } from "expo-linear-gradient";
-import { useNavigation } from "expo-router";
-import { useEffect, useRef, useState } from "react";
+import { router, useNavigation } from "expo-router";
+import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { FlatList, Platform, StyleSheet, View } from "react-native";
-import PagerView from "react-native-pager-view";
-import { SvgUri } from "react-native-svg";
+import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 import Toast from "react-native-toast-message";
 
 export default function AvatarScreen() {
   const navigation = useNavigation();
-  const pagerRef = useRef<PagerView | null>(null);
-  const { hats, faces, tops, bottoms, hands, skins } = useGetAvatarItems();
-  const [currentTab, setCurrentTab] = useState(0);
   const { auth, profileMutation } = useAuth();
   const { t } = useTranslation();
-  const [avatarItem, setAvatarItem] = useState({
-    hatId: auth?.hatId ?? "",
-    faceId: auth?.faceId ?? "",
-    topId: auth?.topId ?? "",
-    bottomId: auth?.bottomId ?? "",
-    handId: auth?.handId ?? "",
-    skinId: auth?.skinId ?? "01",
-  });
+  const insets = useSafeAreaInsets();
 
-  const getImageId = (url: string) => {
-    const filename = url.split("/").pop() ?? "";
-    const [id] = filename.split(".");
-
-    return id;
+  // 기존 avatarConfig가 있으면 사용, 없으면 사용자 ID 기반 기본 설정
+  const initialConfig: LoreleiAvatarConfig = auth?.avatarConfig ?? {
+    ...defaultAvatarConfig,
+    seed: generateAvatarSeed(auth?.id),
   };
 
-  const handlePressItem = (name: string, item: string) => {
-    setAvatarItem((prev) => ({ ...prev, [name]: getImageId(item) }));
-  };
-
-  const handlePressTab = (index: number) => {
-    pagerRef.current?.setPage(index);
-    setCurrentTab(index);
-  };
+  const [avatarConfig, setAvatarConfig] =
+    useState<LoreleiAvatarConfig>(initialConfig);
 
   const handleSaveAvatar = () => {
-    profileMutation.mutate(avatarItem, {
-      onSuccess: () =>
-        Toast.show({
-          type: "success",
-          text1: t("Saved successfully"),
-        }),
-    });
-  };
-
-  const getAvatarItemUrl = (category: string, id?: string) => {
-    const baseUrl = Platform.OS === "ios" ? baseUrls.ios : baseUrls.android;
-
-    if (category === "default" || !Boolean(id)) {
-      return `${baseUrl}/default/frame.svg`;
-    }
-
-    return `${baseUrl}/items/${category}/${id}.svg`;
+    profileMutation.mutate(
+      { avatarConfig },
+      {
+        onSuccess: () =>
+          Toast.show({
+            type: "success",
+            text1: t("Saved successfully"),
+          }),
+      }
+    );
   };
 
   useEffect(() => {
     navigation.setOptions({
-      headerStyle: {
-        backgroundColor: "transparent",
-      },
-      headerTransparent: true,
+      headerShown: false,
     });
   }, [navigation]);
 
   return (
     <>
       <View style={styles.container}>
+        {/* Custom Header */}
         <LinearGradient
-          colors={darkTheme.gradient.primary as any}
+          colors={darkTheme.gradient.primary as [string, string, ...string[]]}
           start={{ x: 0, y: 0 }}
           end={{ x: 1, y: 1 }}
-          style={styles.headerContainer}
+          style={[
+            styles.headerGradient,
+            { paddingTop: insets.top + spacing.sm },
+          ]}
         >
-          <View style={styles.avatarContainer}>
-            {avatarItem.hatId && (
-              <SvgUri
-                uri={getAvatarItemUrl("hats", avatarItem.hatId)}
-                style={[styles.avatar, { zIndex: 70 }]}
+          <View style={styles.header}>
+            <TouchableOpacity
+              onPress={() =>
+                router.canGoBack() ? router.back() : router.replace("/")
+              }
+              style={styles.backButton}
+              activeOpacity={0.7}
+            >
+              <Ionicons
+                name="chevron-back"
+                size={28}
+                color={darkTheme.text.primary}
               />
-            )}
-            {avatarItem.faceId && (
-              <SvgUri
-                uri={getAvatarItemUrl("faces", avatarItem.faceId)}
-                style={[styles.avatar, { zIndex: 60 }]}
-              />
-            )}
-            {avatarItem.topId && (
-              <SvgUri
-                uri={getAvatarItemUrl("tops", avatarItem.topId)}
-                style={[styles.avatar, { zIndex: 50 }]}
-              />
-            )}
-            {avatarItem.bottomId && (
-              <SvgUri
-                uri={getAvatarItemUrl("bottoms", avatarItem.bottomId)}
-                style={[styles.avatar, { zIndex: 40 }]}
-              />
-            )}
-            <SvgUri
-              uri={getAvatarItemUrl("default")}
-              style={[styles.avatar, { zIndex: 30 }]}
-            />
-            {avatarItem.skinId && (
-              <SvgUri
-                uri={getAvatarItemUrl("skins", avatarItem.skinId)}
-                style={[styles.avatar, { zIndex: 20 }]}
-              />
-            )}
-            {avatarItem.handId && (
-              <SvgUri
-                uri={getAvatarItemUrl("hands", avatarItem.handId)}
-                style={[styles.avatar, { zIndex: 10 }]}
-              />
-            )}
+            </TouchableOpacity>
+            <Text style={styles.headerTitle}>{t("Edit Avatar")}</Text>
+            <View style={styles.placeholder} />
           </View>
         </LinearGradient>
-        <View style={styles.tabContainer}>
-          {[
-            t("Hat"),
-            t("Face"),
-            t("Top"),
-            t("Bottom"),
-            t("Hand"),
-            t("Skin"),
-          ].map((tab, index) => (
-            <Tab
-              key={index}
-              isActive={currentTab === index}
-              onPress={() => handlePressTab(index)}
-            >
-              {tab}
-            </Tab>
-          ))}
-        </View>
-        <PagerView
-          ref={pagerRef}
-          style={styles.pagerView}
-          initialPage={0}
-          onPageSelected={(e) => setCurrentTab(e.nativeEvent.position)}
-        >
-          {[
-            { data: hats, name: "hatId", id: avatarItem.hatId },
-            { data: faces, name: "faceId", id: avatarItem.faceId },
-            { data: tops, name: "topId", id: avatarItem.topId },
-            { data: bottoms, name: "bottomId", id: avatarItem.bottomId },
-            { data: hands, name: "handId", id: avatarItem.handId },
-            { data: skins, name: "skinId", id: avatarItem.skinId },
-          ].map((list) => (
-            <FlatList
-              key={list.name}
-              data={list.data}
-              keyExtractor={(item, index) => String(index)}
-              numColumns={3}
-              contentContainerStyle={styles.listContainer}
-              renderItem={({ item }) => (
-                <AvatarItem
-                  uri={item}
-                  isSelected={getImageId(item) === list.id}
-                  onPress={() => handlePressItem(list.name, item)}
-                />
-              )}
-            />
-          ))}
-        </PagerView>
+
+        {/* Avatar Editor */}
+        <AvatarEditor config={avatarConfig} onChange={setAvatarConfig} />
       </View>
       <FixedBottomCTA label={t("Save")} onPress={handleSaveAvatar} />
     </>
@@ -186,40 +95,27 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: darkTheme.bg.primary,
   },
-  headerContainer: {
-    alignItems: "center",
-    position: "relative",
-    width: "100%",
-    // height: 160,
-    paddingTop: 60,
-    paddingBottom :10,
-    
+  headerGradient: {
+    paddingBottom: spacing.md,
   },
-  avatarContainer: {
-    width: 229,
-    height: 229,
-    borderRadius: 115,
-    overflow: "hidden",
-    borderWidth: 3,
-    borderColor: darkTheme.bg.primary,
-    backgroundColor: darkTheme.bg.secondary,
-  },
-  avatar: {
-    width: 229,
-    height: 229,
-    position: "absolute",
-  },
-  listContainer: {
-    paddingBottom: 120,
-    marginTop: spacing.sm,
-    alignItems: "center",
-  },
-  tabContainer: {
+  header: {
     flexDirection: "row",
-    backgroundColor: darkTheme.bg.primary,
+    alignItems: "center",
+    justifyContent: "space-between",
+    paddingHorizontal: spacing.lg,
   },
-  pagerView: {
-    flex: 1,
-    backgroundColor: darkTheme.bg.primary,
+  backButton: {
+    width: 40,
+    height: 40,
+    justifyContent: "center",
+    alignItems: "flex-start",
+  },
+  headerTitle: {
+    fontSize: typography.size.md,
+    fontWeight: typography.weight.semibold,
+    color: darkTheme.text.primary,
+  },
+  placeholder: {
+    width: 40,
   },
 });
