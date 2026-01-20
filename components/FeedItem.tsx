@@ -35,9 +35,6 @@ function FeedItem({ post, isDetail = false }: FeedItemProps) {
   const isOwnPost = auth.id === post.author.id;
   const isLiked = likeUsers?.includes(Number(auth.id));
   const { showActionSheetWithOptions } = useActionSheet();
-
-  // DEBUG: API에서 avatarConfig 반환 확인
-  console.log(`[FeedItem] author: ${post.author.nickname}, avatarConfig:`, post.author.avatarConfig);
   const deletePost = useDeletePost();
   const likePost = useLikePost();
 

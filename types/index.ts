@@ -31,14 +31,6 @@ interface Profile extends User {
   email: string;
   introduce?: string;
   avatarConfig: LoreleiAvatarConfig;
-  // Legacy fields (deprecated)
-  hatId?: string;
-  handId?: string;
-  skinId?: string;
-  topId?: string;
-  faceId?: string;
-  bottomId?: string;
-  background?: string;
 }
 
 interface ImageUri {

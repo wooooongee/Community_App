@@ -65,7 +65,7 @@ function usePushNotification() {
   useEffect(() => {
     registerForPushNotificationsAsync()
       .then((token) => setExpoPushToken(token ?? ""))
-      .catch((error: any) => console.log("error", error));
+      .catch(() => {});
 
     notificationListener.current =
       Notifications.addNotificationReceivedListener((notification) => {
@@ -73,9 +73,7 @@ function usePushNotification() {
       });
 
     responseListener.current =
-      Notifications.addNotificationResponseReceivedListener((response) => {
-        console.log(response);
-      });
+      Notifications.addNotificationResponseReceivedListener(() => {});
 
     return () => {
       if (notificationListener.current) {
