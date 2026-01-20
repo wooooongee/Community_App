@@ -47,7 +47,7 @@ const styles = StyleSheet.create({
     color: darkTheme.text.secondary,
   },
   buttonContainer: {
-    paddingHorizontal: spacing["2xl"],
+    paddingHorizontal: 24,
     flex: 1,
   },
 });

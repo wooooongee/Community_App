@@ -1,8 +1,11 @@
 import { darkTheme } from "@/constants";
 import { Feather } from "@expo/vector-icons";
+import { Image } from "expo-image";
 import { router, useLocalSearchParams } from "expo-router";
-import { Dimensions, Image, Pressable, StyleSheet, View } from "react-native";
+import { Dimensions, Pressable, StyleSheet, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
+
+const blurhash = "L6PZfSi_.AyE_3t7t7R**0o#DgR4";
 
 export default function ImageZoomScreen() {
   const inset = useSafeAreaInsets();
@@ -18,7 +21,10 @@ export default function ImageZoomScreen() {
       </Pressable>
       <Image
         source={{ uri }}
-        resizeMode="contain"
+        placeholder={{ blurhash }}
+        contentFit="contain"
+        transition={300}
+        cachePolicy="memory-disk"
         style={{ width: Dimensions.get("window").width, height: "100%" }}
       />
     </View>
