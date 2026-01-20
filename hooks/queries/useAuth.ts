@@ -14,7 +14,7 @@ import { useEffect } from "react";
 import Toast from "react-native-toast-message";
 
 function useGetMe() {
-  const { data, isError, isSuccess } = useQuery({
+  const { data, isError, isSuccess, isLoading } = useQuery({
     queryFn: getMe,
     queryKey: [queryKeys.AUTH, queryKeys.GET_ME],
   });
@@ -35,7 +35,7 @@ function useGetMe() {
     }
   }, [isError]);
 
-  return { data };
+  return { data, isLoading };
 }
 
 type ResponseError = AxiosError<{
@@ -88,7 +88,7 @@ function useUpdateProfile() {
 }
 
 function useAuth() {
-  const { data } = useGetMe();
+  const { data, isLoading } = useGetMe();
   const loginMutation = useLogin();
   const signupMutation = useSignup();
   const profileMutation = useUpdateProfile();
@@ -107,6 +107,7 @@ function useAuth() {
       introduce: data?.introduce || "",
       avatarConfig: data?.avatarConfig,
     },
+    isLoading,
     loginMutation,
     signupMutation,
     profileMutation,
