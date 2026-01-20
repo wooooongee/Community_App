@@ -106,13 +106,6 @@ function useAuth() {
       imageUri: data?.imageUri || "",
       introduce: data?.introduce || "",
       avatarConfig: data?.avatarConfig,
-      // Legacy fields (deprecated)
-      hatId: data?.hatId || "",
-      handId: data?.handId || "",
-      skinId: data?.skinId || "",
-      topId: data?.topId || "",
-      bottomId: data?.bottomId || "",
-      faceId: data?.faceId || "",
     },
     loginMutation,
     signupMutation,

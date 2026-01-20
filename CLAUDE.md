@@ -53,7 +53,7 @@ npm run lint                # ESLint 실행
 ### API 레이어
 
 - `api/axios.ts`에서 플랫폼별 base URL로 Axios 인스턴스 설정
-- 도메인별로 구성된 API 모듈: `auth.ts`, `post.ts`, `comment.ts`, `avatar.ts`, `image.ts`
+- 도메인별로 구성된 API 모듈: `auth.ts`, `post.ts`, `comment.ts`, `image.ts`
 - 모든 API 함수는 async/await를 사용하며 타입이 지정된 응답 반환
 - 인증 성공 후 `utils/header.ts`를 통해 Authorization 헤더가 전역으로 설정됨
 
@@ -118,4 +118,4 @@ npm run lint                # ESLint 실행
 
 6. **토스트 알림**: 성공/에러 피드백을 위한 `react-native-toast-message`, 루트 레이아웃에서 전역으로 설정됨.
 
-7. **아바타 시스템**: 프로필에 저장된 파츠(모자, 얼굴, 상의, 하의, 손, 피부)로 커스터마이징 가능한 사용자 아바타. 아바타 아이템은 `useGetAvatarItems`를 통해 페치됨.
+7. **아바타 시스템**: DiceBear Lorelei 스타일 기반 아바타. `LoreleiAvatarConfig` 타입으로 커스터마이징 (hair, eyes, eyebrows, mouth, nose, glasses, earrings, head). `components/DiceBearAvatar.tsx`에서 SVG 렌더링, `components/AvatarEditor.tsx`에서 편집 UI 제공.

@@ -1,4 +1,3 @@
-import { baseUrls } from "@/api/axios";
 import { darkTheme, spacing, radius, typography } from "@/constants/theme";
 import type { LoreleiAvatarConfig } from "@/types";
 import dayjs from "dayjs";
@@ -6,14 +5,7 @@ import "dayjs/locale/ko";
 import relativeTime from "dayjs/plugin/relativeTime";
 import React, { ReactNode } from "react";
 import { useTranslation } from "react-i18next";
-import {
-  Image,
-  Platform,
-  Pressable,
-  StyleSheet,
-  Text,
-  View,
-} from "react-native";
+import { Pressable, StyleSheet, Text, View } from "react-native";
 import DiceBearAvatar, { defaultAvatarConfig, generateAvatarSeed } from "./DiceBearAvatar";
 
 dayjs.extend(relativeTime);

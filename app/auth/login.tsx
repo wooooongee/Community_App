@@ -15,7 +15,6 @@ type FormValues = {
 export default function LoginScreen() {
   const { loginMutation } = useAuth();
   const { expoPushToken } = usePushNotification();
-  console.log("expoPushToken", expoPushToken);
   const loginForm = useForm<FormValues>({
     defaultValues: {
       email: "",
