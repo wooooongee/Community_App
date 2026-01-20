@@ -61,6 +61,12 @@ function SearchFeedList() {
         refreshing={isRefreshing}
         onRefresh={handleRefresh}
         showsVerticalScrollIndicator={false}
+        // 성능 최적화 props
+        initialNumToRender={8}
+        maxToRenderPerBatch={8}
+        windowSize={10}
+        removeClippedSubviews={true}
+        updateCellsBatchingPeriod={50}
       />
     </>
   );

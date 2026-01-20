@@ -8,7 +8,7 @@ import { Ionicons, MaterialCommunityIcons, Octicons } from "@expo/vector-icons";
 import * as Haptics from "expo-haptics";
 import { LinearGradient } from "expo-linear-gradient";
 import { router } from "expo-router";
-import React from "react";
+import React, { memo } from "react";
 import { useTranslation } from "react-i18next";
 import { Pressable, Share, StyleSheet, Text, View } from "react-native";
 import Animated, {
@@ -105,7 +105,6 @@ function FeedItem({ post, isDetail = false }: FeedItemProps) {
       await Share.share({
         title: post.title,
         message: `${post.title}\n\n${post.description}`,
-        // URL이 있다면 추가 가능: url: `https://yourapp.com/post/${post.id}`
       });
     } catch (error) {
       console.log("Share error:", error);
@@ -140,7 +139,9 @@ function FeedItem({ post, isDetail = false }: FeedItemProps) {
           <Profile
             userId={post.author.id}
             imageUri={isOwnPost ? auth.imageUri : post.author.imageUri}
-            avatarConfig={isOwnPost ? auth.avatarConfig : post.author.avatarConfig}
+            avatarConfig={
+              isOwnPost ? auth.avatarConfig : post.author.avatarConfig
+            }
             nickname={post.author.nickname}
             createdAt={post.createdAt}
             onPress={() => {
@@ -335,4 +336,17 @@ const styles = StyleSheet.create({
   },
 });
 
-export default FeedItem;
+// React.memo로 불필요한 리렌더링 방지
+// post.id, likes, commentCount, viewCount가 변경될 때만 리렌더
+export default memo(FeedItem, (prevProps, nextProps) => {
+  const prevPost = prevProps.post;
+  const nextPost = nextProps.post;
+
+  return (
+    prevPost.id === nextPost.id &&
+    prevPost.likes.length === nextPost.likes.length &&
+    prevPost.commentCount === nextPost.commentCount &&
+    prevPost.viewCount === nextPost.viewCount &&
+    prevProps.isDetail === nextProps.isDetail
+  );
+});

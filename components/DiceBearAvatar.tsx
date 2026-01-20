@@ -2,7 +2,7 @@ import { darkTheme } from "@/constants/theme";
 import type { LoreleiAvatarConfig } from "@/types";
 import { createAvatar } from "@dicebear/core";
 import { lorelei } from "@dicebear/collection";
-import React, { useMemo } from "react";
+import React, { useMemo, memo } from "react";
 import { View, StyleSheet } from "react-native";
 import { SvgXml } from "react-native-svg";
 
@@ -95,4 +95,11 @@ const styles = StyleSheet.create({
   },
 });
 
-export default DiceBearAvatar;
+// React.memo로 동일한 config/size일 때 리렌더 방지
+export default memo(DiceBearAvatar, (prevProps, nextProps) => {
+  return (
+    prevProps.size === nextProps.size &&
+    prevProps.config?.seed === nextProps.config?.seed &&
+    JSON.stringify(prevProps.config) === JSON.stringify(nextProps.config)
+  );
+});

@@ -8,6 +8,7 @@ import Animated, { FadeInUp, FadeIn, FadeOut, useAnimatedStyle, useSharedValue, 
 import FeedItem from "./FeedItem";
 
 const REFRESH_THRESHOLD = 80;
+const ANIMATION_ITEM_LIMIT = 5; // 처음 5개 항목에만 애니메이션 적용
 
 function FeedList() {
   const {
@@ -97,16 +98,22 @@ function FeedList() {
         ref={ref}
         style={styles.list}
         data={posts?.pages.flat()}
-        renderItem={({ item, index }) => (
-          <Animated.View
-            entering={FadeInUp.delay(index * 80)
-              .duration(400)
-              .springify()
-              .damping(12)}
-          >
-            <FeedItem post={item} />
-          </Animated.View>
-        )}
+        renderItem={({ item, index }) => {
+          // 처음 5개 항목에만 stagger 애니메이션 적용 (성능 최적화)
+          if (index < ANIMATION_ITEM_LIMIT) {
+            return (
+              <Animated.View
+                entering={FadeInUp.delay(index * 50)
+                  .duration(300)
+                  .springify()
+                  .damping(15)}
+              >
+                <FeedItem post={item} />
+              </Animated.View>
+            );
+          }
+          return <FeedItem post={item} />;
+        }}
         contentContainerStyle={styles.contentContainer}
         keyExtractor={(item) => String(item.id)}
         onEndReached={handleEndReached}
@@ -115,6 +122,12 @@ function FeedList() {
         onScrollEndDrag={handleScrollEndDrag}
         scrollEventThrottle={16}
         showsVerticalScrollIndicator={false}
+        // 성능 최적화 props
+        initialNumToRender={8}
+        maxToRenderPerBatch={8}
+        windowSize={10}
+        removeClippedSubviews={true}
+        updateCellsBatchingPeriod={50}
         ListFooterComponent={
           isFetchingNextPage ? (
             <View style={styles.footerLoading}>
@@ -137,7 +150,7 @@ const styles = StyleSheet.create({
   },
   contentContainer: {
     paddingTop: spacing.md,
-    paddingBottom: spacing['4xl'],
+    paddingBottom: 48,
     flexGrow: 1,
   },
   loadingContainer: {

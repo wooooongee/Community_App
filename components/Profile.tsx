@@ -3,7 +3,7 @@ import type { LoreleiAvatarConfig } from "@/types";
 import dayjs from "dayjs";
 import "dayjs/locale/ko";
 import relativeTime from "dayjs/plugin/relativeTime";
-import React, { ReactNode } from "react";
+import React, { ReactNode, memo, useMemo } from "react";
 import { useTranslation } from "react-i18next";
 import { Pressable, StyleSheet, Text, View } from "react-native";
 import DiceBearAvatar, { defaultAvatarConfig, generateAvatarSeed } from "./DiceBearAvatar";
@@ -31,24 +31,20 @@ function Profile({
 }: ProfileProps) {
   const { i18n } = useTranslation();
 
-  // avatarConfig가 있으면 DiceBear 사용, 없으면 userId 기반 기본 아바타 생성
-  const renderAvatar = () => {
-    if (avatarConfig) {
-      return <DiceBearAvatar config={avatarConfig} size={44} />;
-    }
-    // avatarConfig가 없으면 userId 기반 기본 아바타 생성 (일관성 유지)
-    const fallbackConfig: LoreleiAvatarConfig = {
+  // avatarConfig 메모이제이션 - userId/nickname 변경시에만 재계산
+  const finalAvatarConfig = useMemo(() => {
+    if (avatarConfig) return avatarConfig;
+    return {
       ...defaultAvatarConfig,
       seed: generateAvatarSeed(userId || nickname),
     };
-    return <DiceBearAvatar config={fallbackConfig} size={44} />;
-  };
+  }, [avatarConfig, userId, nickname]);
 
   return (
     <View style={styles.container}>
       <Pressable style={styles.profileContainer} onPress={onPress}>
         <View style={styles.avatarContainer}>
-          {renderAvatar()}
+          <DiceBearAvatar config={finalAvatarConfig} size={44} />
         </View>
         <View style={styles.textContainer}>
           <Text style={styles.nickname}>{nickname}</Text>
@@ -98,4 +94,5 @@ const styles = StyleSheet.create({
   },
 });
 
-export default Profile;
+// React.memo로 props 변경시에만 리렌더
+export default memo(Profile);

@@ -36,12 +36,17 @@ function MyFeedList() {
       data={posts?.pages.flat()}
       renderItem={({ item }) => <FeedItem post={item} />}
       contentContainerStyle={styles.contentContainer}
-      // keyExtractor 는 기존 리액트에서 id 값이 다른요소 구분하기위해 key값 부여하는거랑 같음
       keyExtractor={(item) => String(item.id)}
       onEndReached={handleEndReached}
       onEndReachedThreshold={0.5}
       refreshing={isRefreshing}
       onRefresh={handleRefresh}
+      // 성능 최적화 props
+      initialNumToRender={8}
+      maxToRenderPerBatch={8}
+      windowSize={10}
+      removeClippedSubviews={true}
+      updateCellsBatchingPeriod={50}
     />
   );
 }
