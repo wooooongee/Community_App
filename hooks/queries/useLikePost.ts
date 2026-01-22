@@ -82,29 +82,19 @@ function useLikePost() {
 
       return { previousPost, previousPosts };
     },
-    onError: (err, postId, context) => {
-      // Rollback detail page
+    onError: (_err, postId, context) => {
       if (context?.previousPost) {
         queryClient.setQueryData(
           [queryKeys.POST, queryKeys.GET_POST, postId],
           context.previousPost
         );
       }
-      // Rollback feed list
       if (context?.previousPosts) {
         queryClient.setQueryData(
           [queryKeys.POST, queryKeys.GET_POSTS],
           context.previousPosts
         );
       }
-    },
-    onSettled: (data, error, variables) => {
-      queryClient.invalidateQueries({
-        queryKey: [queryKeys.POST, queryKeys.GET_POST, variables],
-      });
-      queryClient.invalidateQueries({
-        queryKey: [queryKeys.POST, queryKeys.GET_POSTS],
-      });
     },
   });
 }

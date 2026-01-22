@@ -1,5 +1,4 @@
 import { darkTheme, radius, spacing, typography } from "@/constants/theme";
-import useAuth from "@/hooks/queries/useAuth";
 import useDeletePost from "@/hooks/queries/useDeletePost";
 import useLikePost from "@/hooks/queries/useLikePost";
 import type { Post } from "@/types";
@@ -8,7 +7,8 @@ import { Ionicons, MaterialCommunityIcons, Octicons } from "@expo/vector-icons";
 import * as Haptics from "expo-haptics";
 import { LinearGradient } from "expo-linear-gradient";
 import { router } from "expo-router";
-import React, { memo } from "react";
+import React, { memo, useMemo } from "react";
+import { countRender } from "@/utils/performance";
 import { useTranslation } from "react-i18next";
 import { Pressable, Share, StyleSheet, Text, View } from "react-native";
 import Animated, {
@@ -26,15 +26,26 @@ const AnimatedPressable = Animated.createAnimatedComponent(Pressable);
 interface FeedItemProps {
   post: Post;
   isDetail?: boolean;
+  authId?: string | number;
 }
 
-function FeedItem({ post, isDetail = false }: FeedItemProps) {
-  const { auth } = useAuth();
+function FeedItem({ post, isDetail = false, authId }: FeedItemProps) {
+  if (__DEV__) {
+    const renderCount = countRender(`FeedItem:${post.id}`);
+    if (renderCount > 1) {
+      console.log(`🔄 [FeedItem:${post.id}] 렌더 ${renderCount}회`);
+    }
+  }
+
   const { t } = useTranslation();
-  const likeUsers = post.likes?.map((like) => Number(like.userId));
-  const isOwnPost = auth.id === post.author.id;
-  const isLiked = likeUsers?.includes(Number(auth.id));
   const { showActionSheetWithOptions } = useActionSheet();
+
+  const isOwnPost = authId === post.author.id;
+
+  const isLiked = useMemo(() => {
+    const likeUsers = post.likes?.map((like) => Number(like.userId));
+    return likeUsers?.includes(Number(authId));
+  }, [post.likes, authId]);
   const deletePost = useDeletePost();
   const likePost = useLikePost();
 
@@ -89,7 +100,7 @@ function FeedItem({ post, isDetail = false }: FeedItemProps) {
   };
 
   const handlePressLike = () => {
-    if (!auth.id) {
+    if (!authId) {
       router.push("/auth");
       return;
     }
@@ -138,10 +149,8 @@ function FeedItem({ post, isDetail = false }: FeedItemProps) {
         <View style={styles.contentContainer}>
           <Profile
             userId={post.author.id}
-            imageUri={isOwnPost ? auth.imageUri : post.author.imageUri}
-            avatarConfig={
-              isOwnPost ? auth.avatarConfig : post.author.avatarConfig
-            }
+            imageUri={post.author.imageUri}
+            avatarConfig={post.author.avatarConfig}
             nickname={post.author.nickname}
             createdAt={post.createdAt}
             onPress={() => {
@@ -149,7 +158,7 @@ function FeedItem({ post, isDetail = false }: FeedItemProps) {
               router.push(`/profile/${post.author.id}`);
             }}
             option={
-              auth.id === post.author.id && (
+              isOwnPost && (
                 <Ionicons
                   name="ellipsis-horizontal"
                   size={20}
@@ -336,8 +345,6 @@ const styles = StyleSheet.create({
   },
 });
 
-// React.memo로 불필요한 리렌더링 방지
-// post.id, likes, commentCount, viewCount가 변경될 때만 리렌더
 export default memo(FeedItem, (prevProps, nextProps) => {
   const prevPost = prevProps.post;
   const nextPost = nextProps.post;
@@ -347,6 +354,7 @@ export default memo(FeedItem, (prevProps, nextProps) => {
     prevPost.likes.length === nextPost.likes.length &&
     prevPost.commentCount === nextPost.commentCount &&
     prevPost.viewCount === nextPost.viewCount &&
-    prevProps.isDetail === nextProps.isDetail
+    prevProps.isDetail === nextProps.isDetail &&
+    prevProps.authId === nextProps.authId
   );
 });

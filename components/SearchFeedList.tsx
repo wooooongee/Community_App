@@ -1,4 +1,5 @@
 import { darkTheme, spacing } from "@/constants/theme";
+import useAuth from "@/hooks/queries/useAuth";
 import useGetInfiniteSearchPosts from "@/hooks/queries/useGetInfiniteSearchPosts";
 import { Feather } from "@expo/vector-icons";
 import { router } from "expo-router";
@@ -8,6 +9,7 @@ import FeedItem from "./FeedItem";
 import SearchInput from "./SearchInput";
 
 function SearchFeedList() {
+  const { auth } = useAuth();
   const [keyword, setKeyword] = useState("");
   const [submitKeyword, setSubmitKeyword] = useState("");
   const {
@@ -53,7 +55,7 @@ function SearchFeedList() {
       </View>
       <FlatList
         data={posts?.pages.flat()}
-        renderItem={({ item }) => <FeedItem post={item} />}
+        renderItem={({ item }) => <FeedItem post={item} authId={auth.id} />}
         contentContainerStyle={styles.contentContainer}
         keyExtractor={(item) => String(item.id)}
         onEndReached={handleEndReached}

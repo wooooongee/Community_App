@@ -10,32 +10,40 @@ import {
 import { useMutation, useQuery } from "@tanstack/react-query";
 import type { AxiosError } from "axios";
 import { router } from "expo-router";
-import { useEffect } from "react";
+import { useEffect, useMemo, useState } from "react";
 import Toast from "react-native-toast-message";
 
 function useGetMe() {
-  const { data, isError, isSuccess, isLoading } = useQuery({
-    queryFn: getMe,
-    queryKey: [queryKeys.AUTH, queryKeys.GET_ME],
-  });
+  const [hasToken, setHasToken] = useState<boolean | null>(null);
 
   useEffect(() => {
-    (async () => {
-      if (isSuccess) {
-        const accessToken = await getSecureStore("accessToken");
-        setHeader("Authorization", `Bearer ${accessToken}`);
+    getSecureStore("accessToken").then((token) => {
+      setHasToken(!!token);
+      if (token) {
+        setHeader("Authorization", `Bearer ${token}`);
       }
-    })();
-  }, [isSuccess]);
+    });
+  }, []);
+
+  const { data, isError, isLoading } = useQuery({
+    queryFn: getMe,
+    queryKey: [queryKeys.AUTH, queryKeys.GET_ME],
+    enabled: hasToken === true,
+    staleTime: Infinity,
+    refetchOnWindowFocus: false,
+    refetchOnMount: false,
+    refetchOnReconnect: false,
+  });
 
   useEffect(() => {
     if (isError) {
       removeHeader("Authorization");
       deleteSecureStore("accessToken");
+      setHasToken(false);
     }
   }, [isError]);
 
-  return { data, isLoading };
+  return { data, isLoading: hasToken === null || isLoading };
 }
 
 type ResponseError = AxiosError<{
@@ -99,14 +107,19 @@ function useAuth() {
     queryClient.resetQueries({ queryKey: [queryKeys.AUTH] });
   };
 
-  return {
-    auth: {
+  const auth = useMemo(
+    () => ({
       id: data?.id || "",
       nickname: data?.nickname || "",
       imageUri: data?.imageUri || "",
       introduce: data?.introduce || "",
       avatarConfig: data?.avatarConfig,
-    },
+    }),
+    [data?.id, data?.nickname, data?.imageUri, data?.introduce, data?.avatarConfig]
+  );
+
+  return {
+    auth,
     isLoading,
     loginMutation,
     signupMutation,

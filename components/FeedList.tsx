@@ -1,4 +1,5 @@
 import { darkTheme, spacing } from "@/constants/theme";
+import useAuth from "@/hooks/queries/useAuth";
 import useGetInfinitePosts from "@/hooks/queries/useGetInfinitePosts";
 import type { Post } from "@/types";
 import { useScrollToTop } from "@react-navigation/native";
@@ -11,6 +12,7 @@ const REFRESH_THRESHOLD = 80;
 const ANIMATION_ITEM_LIMIT = 5; // 처음 5개 항목에만 애니메이션 적용
 
 function FeedList() {
+  const { auth } = useAuth();
   const {
     data: posts,
     fetchNextPage,
@@ -99,7 +101,6 @@ function FeedList() {
         style={styles.list}
         data={posts?.pages.flat()}
         renderItem={({ item, index }) => {
-          // 처음 5개 항목에만 stagger 애니메이션 적용 (성능 최적화)
           if (index < ANIMATION_ITEM_LIMIT) {
             return (
               <Animated.View
@@ -108,11 +109,11 @@ function FeedList() {
                   .springify()
                   .damping(15)}
               >
-                <FeedItem post={item} />
+                <FeedItem post={item} authId={auth.id} />
               </Animated.View>
             );
           }
-          return <FeedItem post={item} />;
+          return <FeedItem post={item} authId={auth.id} />;
         }}
         contentContainerStyle={styles.contentContainer}
         keyExtractor={(item) => String(item.id)}

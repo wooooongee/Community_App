@@ -94,5 +94,4 @@ const styles = StyleSheet.create({
   },
 });
 
-// React.memo로 props 변경시에만 리렌더
 export default memo(Profile);

@@ -1,4 +1,5 @@
 import { darkTheme } from "@/constants";
+import useAuth from "@/hooks/queries/useAuth";
 import useGetInfiniteMyPosts from "@/hooks/queries/useGetInfiniteMyPosts";
 import { useScrollToTop } from "@react-navigation/native";
 import React, { useRef, useState } from "react";
@@ -6,6 +7,7 @@ import { FlatList, StyleSheet } from "react-native";
 import FeedItem from "./FeedItem";
 
 function MyFeedList() {
+  const { auth } = useAuth();
   const {
     data: posts,
     fetchNextPage,
@@ -34,7 +36,7 @@ function MyFeedList() {
     <FlatList
       ref={ref}
       data={posts?.pages.flat()}
-      renderItem={({ item }) => <FeedItem post={item} />}
+      renderItem={({ item }) => <FeedItem post={item} authId={auth.id} />}
       contentContainerStyle={styles.contentContainer}
       keyExtractor={(item) => String(item.id)}
       onEndReached={handleEndReached}

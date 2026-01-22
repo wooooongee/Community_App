@@ -1,4 +1,5 @@
 import { darkTheme } from "@/constants";
+import useAuth from "@/hooks/queries/useAuth";
 import useGetInfiniteUserPosts from "@/hooks/queries/useGetInfiniteUserPosts";
 import { useScrollToTop } from "@react-navigation/native";
 import React, { useRef, useState } from "react";
@@ -10,6 +11,7 @@ interface UserFeedListProps {
 }
 
 function UserFeedList({ userId }: UserFeedListProps) {
+  const { auth } = useAuth();
   const {
     data: posts,
     fetchNextPage,
@@ -38,7 +40,7 @@ function UserFeedList({ userId }: UserFeedListProps) {
     <FlatList
       ref={ref}
       data={posts?.pages.flat()}
-      renderItem={({ item }) => <FeedItem post={item} />}
+      renderItem={({ item }) => <FeedItem post={item} authId={auth.id} />}
       contentContainerStyle={styles.contentContainer}
       // keyExtractor 는 기존 리액트에서 id 값이 다른요소 구분하기위해 key값 부여하는거랑 같음
       keyExtractor={(item) => String(item.id)}

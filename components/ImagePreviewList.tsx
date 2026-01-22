@@ -10,7 +10,6 @@ interface ImagePreviewListProps {
   imageUris: ImageUri[];
 }
 
-// expo-image 캐시 정책: 메모리 + 디스크 캐시로 로딩 속도 80% 향상
 const blurhash = "L6PZfSi_.AyE_3t7t7R**0o#DgR4";
 
 function ImagePreviewList({ imageUris = [] }: ImagePreviewListProps) {
@@ -66,5 +65,4 @@ const styles = StyleSheet.create({
   },
 });
 
-// React.memo로 이미지 목록 불필요한 리렌더 방지
 export default memo(ImagePreviewList);

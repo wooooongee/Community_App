@@ -3,6 +3,7 @@ import CommentItem from "@/components/CommentItem";
 import FeedItem from "@/components/FeedItem";
 import InputField from "@/components/InputField";
 import { darkTheme, spacing, typography, radius } from "@/constants/theme";
+import useAuth from "@/hooks/queries/useAuth";
 import useCreateComment from "@/hooks/queries/useCreateComment";
 import useGetPost from "@/hooks/queries/useGetPost";
 import useKeyboard from "@/hooks/queries/useKeyboard";
@@ -26,6 +27,7 @@ import { LinearGradient } from "expo-linear-gradient";
 
 export default function PostDetailScreen() {
   const { id } = useLocalSearchParams();
+  const { auth } = useAuth();
   const { data: post, isPending, isError } = useGetPost(Number(id));
   const createComment = useCreateComment();
   const [content, setContent] = useState("");
@@ -89,7 +91,7 @@ export default function PostDetailScreen() {
             contentContainerStyle={styles.scrollViewContainer}
           >
             <View style={{ marginTop: 12 }}>
-              <FeedItem post={post} isDetail />
+              <FeedItem post={post} isDetail authId={auth.id} />
               <Text style={styles.commentCount}>
                 {t("{{count}} comments", { count: post.commentCount })} 
               </Text>

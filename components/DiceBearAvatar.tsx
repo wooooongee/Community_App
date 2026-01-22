@@ -95,7 +95,6 @@ const styles = StyleSheet.create({
   },
 });
 
-// React.memo로 동일한 config/size일 때 리렌더 방지
 export default memo(DiceBearAvatar, (prevProps, nextProps) => {
   return (
     prevProps.size === nextProps.size &&
