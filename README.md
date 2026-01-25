@@ -7,6 +7,25 @@ React Native와 Expo로 구축한 소셜 커뮤니티 모바일 애플리케이�
 ![TypeScript](https://img.shields.io/badge/TypeScript-5.9-3178C6?style=flat-square&logo=typescript)
 ![TanStack Query](https://img.shields.io/badge/TanStack_Query-v5-FF4154?style=flat-square)
 
+## 목차
+
+- [스크린샷](#스크린샷)
+- [주요 기능](#주요-기능)
+- [기술 스택](#기술-스택)
+- [아키텍처 하이라이트](#아키텍처-하이라이트)
+  - [성능 최적화](#성능-최적화)
+  - [Optimistic Update](#optimistic-update)
+  - [보안](#보안)
+- [프로젝트 구조](#프로젝트-구조)
+- [시작하기](#시작하기)
+  - [요구사항](#요구사항)
+  - [설치](#설치)
+  - [실행](#실행)
+- [주요 구현 사항](#주요-구현-사항)
+  - [인증 플로우](#인증-플로우)
+  - [쿼리 캐시 전략](#쿼리-캐시-전략)
+  - [다국어 지원](#다국어-지원)
+
 ## 스크린샷
 
 |                     홈 피드                     |                    포스트 상세                    |                    아바타 편집                    |
